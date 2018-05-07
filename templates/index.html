@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<link href='https://fonts.googleapis.com/css?family=Cousine' rel='stylesheet'>
+<link href='/static/style.css' rel='stylesheet'/>
+<title>Finance Tools</title>
+</head>
+<body>
+    <h1>Finance Tools</h1>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    {{ chart|safe }}
+    <ul>
+        <li><a href="{{ url_for('stock_chart',ticker='goog') }}">Stock Chart</a></li>
+        <li><a href="/static/reactplay.html">React Play</a></li>
+    </ul>
+    <p class="annotation">{{annotation}}</p>
+</body>
+</html>

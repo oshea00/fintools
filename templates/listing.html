@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+<link href='https://fonts.googleapis.com/css?family=Cousine' rel='stylesheet'>
+<title>Program Listing</title>
+<style type=text/css>
+@media print
+{
+    * {-webkit-print-color-adjust:exact;}
+}
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+}
+
+a { color: #004B6B; }
+a:hover { color: #6D4100; }
+h1 {
+  font-family: 'Garamond', 'Georgia', serif;
+  font-weight: normal;
+  color: #222;
+  font-size: 36px;
+  padding: 50px 0 10px 50px;
+  margin: 0;
+}
+p {
+  font-family: 'Georgia', serif;
+  color: #000;
+  font-size: 17px;
+  padding: 10px 0 0 90px;
+  margin: 0;
+  width: 360px;
+}
+.card 
+{
+    background: url({{ url_for('static', filename='cardvect.png')}});
+    background-repeat: no-repeat;
+    padding-top: 11px;
+    padding-left: 30px;
+    height: 100px;
+}
+.card table 
+{
+    width: 550px;
+}
+.card td {
+    width: 20%;
+}
+.flags {
+    position: absolute;
+}
+.modes {
+    position: absolute;
+    left: 150px;
+}
+.registers {
+    position: absolute;
+    top: 220px;
+}
+.registers table {
+    width: 600px;
+}
+.alpharegs table {
+    position: absolute;
+    top: 350px;
+    width: 160px;
+}
+.listing {
+    position: absolute;
+    top: 520px;
+    column-count: 3;
+    column-gap: 30px;
+    font-family: 'Cousine';
+    font-size: 16px;
+    color: #406fbc;
+    
+}
+.listing span {
+    white-space: pre;
+}
+</style>
+</head>
+<body>
+<div class="card">
+    <table>
+    <tr>
+    <th colspan="5" align="left">{{title}}</th>
+    </tr>
+    <tr>
+    <td>{{labelA}}</td>
+    <td>{{labelB}}</td>
+    <td>{{labelC}}</td>
+    <td>{{labelD}}</td>
+    <td>{{labelE}}</td>
+    </tr>
+    <tr>
+    <td>{{labela}}</td>
+    <td>{{labela}}</td>
+    <td>{{labelc}}</td>
+    <td>{{labeld}}</td>
+    <td>{{labele}}</td>
+    </tr>
+    </table>
+</div>
+<div class="flags">
+    <table>
+        {% for f in flags %}
+        <tr>
+            <td>Flag {{loop.index0}}:</td>
+            <td>{{f}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="modes">
+    <table>
+        <tr>
+            <td>Angle Mode:</td>
+            <td>{{angleMode}}</td>
+        </tr>
+        <tr>
+            <td>Display Mode:</td>
+            <td>{{displayMode}}</td>
+        </tr>
+        <tr>
+            <td>Display Size:</td>
+            <td>{{displaySize}}</td>
+        </tr>
+        </table>
+</div>
+<div class="registers">
+<table>
+    <tr>
+        <td>P0:</td>
+        <td>{{registers[0]}}</td>
+        <td>P5:</td>
+        <td>{{registers[5]}}</td>
+        <td>S0:</td>
+        <td>{{registers[10]}}</td>
+        <td>S5:</td>
+        <td>{{registers[15]}}</td>
+    </tr>
+    <tr>
+        <td>P1:</td>
+        <td>{{registers[1]}}</td>
+        <td>P6:</td>
+        <td>{{registers[6]}}</td>
+        <td>S1:</td>
+        <td>{{registers[11]}}</td>
+        <td>S6:</td>
+        <td>{{registers[16]}}</td>
+    </tr>
+    <tr>
+        <td>P2:</td>
+        <td>{{registers[2]}}</td>
+        <td>P7:</td>
+        <td>{{registers[7]}}</td>
+        <td>S2:</td>
+        <td>{{registers[12]}}</td>
+        <td>S7:</td>
+        <td>{{registers[17]}}</td>
+    </tr>
+    <tr>
+        <td>P3:</td>
+        <td>{{registers[3]}}</td>
+        <td>P8:</td>
+        <td>{{registers[8]}}</td>
+        <td>S3:</td>
+        <td>{{registers[13]}}</td>
+        <td>S8:</td>
+        <td>{{registers[18]}}</td>
+    </tr>
+   <tr>
+        <td>P4:</td>
+        <td>{{registers[4]}}</td>
+        <td>P9:</td>
+        <td>{{registers[9]}}</td>
+        <td>S4:</td>
+        <td>{{registers[14]}}</td>
+        <td>S9:</td>
+        <td>{{registers[19]}}</td>
+    </tr>                
+</table>
+</div>
+<div class="alpharegs">
+    <table id="alpharegs">
+    <tr>
+        <td>A:</td>
+        <td>{{registers[20]}}</td>
+    </tr>
+    <tr>
+        <td>B:</td>
+        <td>{{registers[21]}}</td>
+    </tr>
+    <tr>
+        <td>C:</td>
+        <td>{{registers[22]}}</td>    
+    </tr>
+    <tr>
+        <td>D:</td>
+        <td>{{registers[23]}}</td>
+    </tr>
+    <tr>
+        <td>E:</td>
+        <td>{{registers[24]}}</td>
+    </tr>
+    <tr>
+        <td>I:</td>
+        <td>{{registers[25]}}</td>
+    </tr>
+    </table>
+</div>
+<div class="listing">
+    {% for l in programLines %}
+        <span>{{l}}</span><br>
+    {% endfor %}
+</div>
+</body>    
+</html>
