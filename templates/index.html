@@ -11,7 +11,7 @@
 
     {{ chart|safe }}
     <ul>
-        <li><a href="{{ url_for('stock_chart',ticker='goog') }}">GOOG Stock Chart</a></li>
+        <li><a href="{{ url_for('stock_chart',ticker='goog',days=90) }}">GOOG Stock Chart</a></li>
         <li><a href="/static/reactplay.html">React Play</a></li>
     </ul>
     <p class="annotation">{{annotation}}</p>
