@@ -35,24 +35,51 @@ def getSymbolData(symbol,dburl):
     else:
         return df
 
-def getPlot(symbol,df,days,output_type='div'):
-    trace = go.Scatter(
-        x = df.index,
-        y = df['Adj Close'],
-        mode = 'lines',
-        name = 'Adj Close'
-    )
+def getPlot(symbol,df,output_type='div'):
+    labels = ["All Days","Last 30","Last 60","Last 90"]
+    vis = [[True,False,False,False],
+           [False,True,False,False],
+           [False,False,True,False],
+           [False,False,False,True]]
+    traces = []
+    for i,d in enumerate(df):
+        traces.append(go.Scatter(
+            x = d.index,
+            y = d['Adj Close'],
+            mode = 'lines',
+            name = str.format('Adj Close {}',labels[i]),
+            visible = True if i==0 else False
+        ))
+
+    buttons = []
+    for i,t in enumerate(traces):
+        buttons.append(
+            dict(label = t.name,
+                 method = 'update',
+                 args = [{'visible': vis[i]}])
+        )
+        
+    updatemenus = list([
+        dict(active=0,
+             buttons=buttons
+        )
+    ])
+
     layout = dict(
         hovermode = 'closest',
         showlegend = True,
-        title = str.format('{} Last {} Days',symbol,days),
+        title = str.format('{} Price',symbol),
         yaxis = dict(title = 'Date'),
-        xaxis = dict(title = 'Adj Close Price')
+        xaxis = dict(title = 'Adj Close Price'),
+        plot_bgcolor = '#E2E3E5',
+        updatemenus=updatemenus
     )
-    data = [trace]
+    
+    data = traces
     fig = dict(data=data, layout=layout)
     div = plot(fig, output_type=output_type,config=dict(displayModeBar=True))
     return div  
+
 
 
 

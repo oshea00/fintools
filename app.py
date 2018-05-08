@@ -55,8 +55,11 @@ def stock_chart(ticker,days):
     title = "Stock Chart"
     symbol = ticker.upper()
     df = stockdb.getSymbolData(symbol,DATABASE_URL)
+    df20 = df.iloc[-20:]
+    df40 = df.iloc[-40:]
+    df60 = df.iloc[-60:]
     if df is not None:
-        div = stockdb.getPlot(symbol,df,days)
+        div = stockdb.getPlot(symbol,[df,df20,df40,df60])
         return render_template('stock.html',title=title,chart=div,annotiation='Source: Yahoo Finance')
     else:
         return render_template('stock.html',
