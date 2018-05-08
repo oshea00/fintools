@@ -61,13 +61,15 @@ def getPlot(symbol,df,output_type='div'):
         
     updatemenus = list([
         dict(active=0,
-             buttons=buttons
+             buttons=buttons,
+             x=0.1,
+             y=1.1
         )
     ])
 
     layout = dict(
         hovermode = 'closest',
-        showlegend = True,
+        showlegend = False,
         title = str.format('{} Price',symbol),
         yaxis = dict(title = 'Date'),
         xaxis = dict(title = 'Adj Close Price'),
