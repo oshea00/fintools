@@ -71,8 +71,8 @@ def getPlot(symbol,df,output_type='div'):
         hovermode = 'closest',
         showlegend = False,
         title = str.format('{} Price',symbol),
-        yaxis = dict(title = 'Date'),
-        xaxis = dict(title = 'Adj Close Price'),
+        yaxis = dict(title = 'Adj Close Price'),
+        xaxis = dict(title = 'Date'),
         plot_bgcolor = '#E2E3E5',
         updatemenus=updatemenus
     )
