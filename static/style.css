@@ -9,7 +9,6 @@
     padding-left: 0px; /* the space between the start of your logo and your text */
     padding-top: 20px; /* the vertical space between the top and your text, to center the logo*/
     display: block; /* very important since normally anchors are inline */
-    width: 850px;
     height: 100px;
     border-bottom: 1px solid rgb(29, 14, 14);  
 
@@ -120,12 +119,14 @@ ul {
 .nav li:hover ul li a:hover{ /* Here we define the most explicit hover states--what happens when you hover each individual link. */
 	background:#333;
 }
+.content {
+    margin-left: 10px;
+}
 /* footer */
 .footer {
     color: #666;  
     font-size: 60%;
     margin: 20px auto 10px auto; 
-    width: 850px;
     padding: 5px 0;
     text-align: left;
     background: #F8F7F7;
