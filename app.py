@@ -30,21 +30,31 @@ except:
 def get_index():
     return render_template('index.html')
 
+@app.route("/symdata",methods=['PUT'])
+def sym_data():
+    if request.content_length < 50000:
+        r=""
+        try:
+            r = json.loads(request.data)
+            if 'symbol' in r:
+                symbol = r['symbol']
+                js = r['js']
+                stockdb.saveData(symbol,js,DATABASE_URL)
+                msg = str.format("added {}",symbol)
+                app.logger.info(msg)
+                return msg, 200
+            else:
+                return "bad file", 413
+        except Exception as ex:
+            app.logger.warn(ex)
+    else:
+        return "bad file", 413
+
 @app.route("/stockchart/<string:ticker>",methods=['GET'])
 def stock_chart(ticker):
     title = "Stock Chart"
     symbol = ticker.upper()
     df = stockdb.getSymbolData(symbol,DATABASE_URL)
-    if df is None:
-        app.logger.warn(str.format("{} not found. Attempting to retrieve...",symbol))
-        js = stockdb.getLast30days(symbol)
-        if js != None:
-            app.logger.info(str.format("{} retrieved.",symbol))
-            stockdb.saveData(symbol,js,DATABASE_URL)
-            df = stockdb.getSymbolData(symbol,DATABASE_URL)
-        else:
-            app.logger.warn(str.format("{} could not be retrieved.",symbol))
-            
     if df is not None:
         div = stockdb.getPlot(symbol,df)
         return render_template('stock.html',title=title,chart=div,annotiation='Source: Yahoo Finance')

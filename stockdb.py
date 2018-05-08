@@ -7,15 +7,11 @@ from plotly.offline import plot, iplot
 import plotly.graph_objs as go
 
 def getLast30days(symbol,src = 'yahoo'):
-    try:
-        end = dt.datetime.now()
-        start = end - dt.timedelta(days=30)
-        df = pdr.DataReader(symbol, src, start, end)
-        js = df.to_json()
-    except:
-        return None
-    else:
-        return js
+    end = dt.datetime.now()
+    start = end - dt.timedelta(days=30)
+    df = pdr.DataReader(symbol, src, start, end)
+    js = df.to_json()
+    return js
 
 def saveData(symbol,jsstr,dburl):
     conn = pg.connect(dburl)
