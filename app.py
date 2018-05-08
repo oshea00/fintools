@@ -7,6 +7,7 @@ from plotly.offline import plot
 import plotly.graph_objs as go
 import logging
 import quandl
+import stockdb
 
 app = Flask(__name__)
 
@@ -31,71 +32,27 @@ def get_index():
 
 @app.route("/stockchart/<string:ticker>",methods=['GET'])
 def stock_chart(ticker):
-    return render_template('stock.html',title='Google',chart=ticker)
-
-@app.route('/charting',methods=['PUT'])
-def store_chart():
-    d = ""
-    if len(request.data) > 50000:
-        return "bad file", 405
-    try:
-        d = json.loads(request.data)
-    except:
-        app.logger.warn(request.data)
-    if 'ChartName' not in d:
-        app.logger.info('missing attribute')
-        return "bad file", 405
-    else:
-        chartId = str(uuid.uuid4()).replace('-','')
-        # Create a trace
-        if d['ChartType']=='Scatter':
-            trace = go.Scatter(
-                x = d['X'],
-                y = d['Y'],
-                mode = 'markers'
-            )
-        elif d['ChartType']=='Line':
-            trace = go.Scatter(
-                x = d['X'],
-                y = d['Y'],
-                mode = 'lines+markers'
-            )
-        elif d['ChartType']=='Spline':
-            trace = go.Scatter(
-                x = d['X'],
-                y = d['Y'],
-                mode = 'lines',
-                line=dict(shape="spline")
-            )
-        elif d['ChartType']=='Bar':
-            trace = go.Bar(
-                x=d['X'],
-                y=d['Y'])
+    title = "Stock Chart"
+    symbol = ticker.upper()
+    df = stockdb.getSymbolData(symbol,DATABASE_URL)
+    if df is None:
+        app.logger.warn(str.format("{} not found. Attempting to retrieve...",symbol))
+        js = stockdb.getLast30days(symbol)
+        if js != None:
+            app.logger.info(str.format("{} retrieved.",symbol))
+            stockdb.saveData(symbol,js,DATABASE_URL)
+            df = stockdb.getSymbolData(symbol,DATABASE_URL)
         else:
-            trace = go.Scatter(
-                x = d['X'],
-                y = d['Y'],
-                mode = 'markers'
-            )
+            app.logger.warn(str.format("{} could not be retrieved.",symbol))
             
-        layout = dict(
-              hovermode = 'closest',
-              showlegend = d['ShowLegend'],
-              title = d['ChartName'],
-              yaxis = dict(title = d['XLabel']),
-              xaxis = dict(title = d['YLabel'])
-             )
-        data = [trace]
-        fig = dict(data=data, layout=layout)
-        div = plot(fig, output_type='div',config=dict(displayModeBar=True))
-        output_from_parsed_template = render_template('chart.html', chart=div, annotation=d['Annotation'], title=d['ChartName'])
-        conn = psycopg2.connect(DATABASE_URL)
-        cur = conn.cursor()
-        cur.execute('INSERT INTO charts (id,chart) VALUES (%s, %s)',(chartId,output_from_parsed_template))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return chartId
+    if df is not None:
+        div = stockdb.getPlot(symbol,df)
+        return render_template('stock.html',title=title,chart=div,annotiation='Source: Yahoo Finance')
+    else:
+        return render_template('stock.html',
+            title=title,
+            chart=str.format('No Data For Ticker {}',symbol),
+            annotiation='Source: Yahoo Finance')
 
 app.logger.info("Started!")
 
