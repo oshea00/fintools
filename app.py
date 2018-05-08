@@ -50,8 +50,8 @@ def sym_data():
     else:
         return "bad file", 413
 
-@app.route("/stockchart/<string:ticker>/<int:days>",methods=['GET'])
-def stock_chart(ticker,days):
+@app.route("/stockchart/<string:ticker>",methods=['GET'])
+def stock_chart(ticker):
     title = "Stock Chart"
     symbol = ticker.upper()
     df = stockdb.getSymbolData(symbol,DATABASE_URL)
