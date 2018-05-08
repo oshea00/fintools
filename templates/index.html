@@ -3,16 +3,24 @@
 <head>
 <link href='https://fonts.googleapis.com/css?family=Cousine' rel='stylesheet'>
 <link href='/static/style.css' rel='stylesheet'/>
+<link rel="shortcut icon" href="/static/favicon.ico"/>
 <title>Finance Tools</title>
 </head>
 <body>
+    {% include "header.html" %}
     <h1>Finance Tools</h1>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     {{ chart|safe }}
-    <ul>
-        <li><a href="{{ url_for('stock_chart',ticker='goog') }}">GOOG Stock Chart</a></li>
-        <li><a href="/static/reactplay.html">React Play</a></li>
+
+    <ul class="nav">
+        <li><a href="#">Charts</a>
+            <ul>
+                <li><a href="{{ url_for('stock_chart',ticker='goog') }}">Google</a></li>
+                <li><a href="{{ url_for('stock_chart',ticker='aapl') }}">Apple</a></li>
+                <li><a href="{{ url_for('stock_chart',ticker='fb') }}">Facebook</a></li>
+            </ul>
+        </li>
     </ul>
     <p class="annotation">{{annotation}}</p>
 </body>
