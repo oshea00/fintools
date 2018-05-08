@@ -35,7 +35,7 @@ def getSymbolData(symbol,dburl):
     else:
         return df
 
-def getPlot(symbol,df,output_type='div'):
+def getPlot(symbol,df,days,output_type='div'):
     trace = go.Scatter(
         x = df.index,
         y = df['Adj Close'],
@@ -45,7 +45,7 @@ def getPlot(symbol,df,output_type='div'):
     layout = dict(
         hovermode = 'closest',
         showlegend = True,
-        title = str.format('{} Last 30 Days',symbol),
+        title = str.format('{} Last {} Days',symbol,days),
         yaxis = dict(title = 'Date'),
         xaxis = dict(title = 'Adj Close Price')
     )

@@ -50,13 +50,13 @@ def sym_data():
     else:
         return "bad file", 413
 
-@app.route("/stockchart/<string:ticker>",methods=['GET'])
-def stock_chart(ticker):
+@app.route("/stockchart/<string:ticker>/<int:days>",methods=['GET'])
+def stock_chart(ticker,days):
     title = "Stock Chart"
     symbol = ticker.upper()
     df = stockdb.getSymbolData(symbol,DATABASE_URL)
     if df is not None:
-        div = stockdb.getPlot(symbol,df)
+        div = stockdb.getPlot(symbol,df,days)
         return render_template('stock.html',title=title,chart=div,annotiation='Source: Yahoo Finance')
     else:
         return render_template('stock.html',
