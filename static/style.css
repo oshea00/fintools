@@ -9,7 +9,7 @@
     padding-left: 0px; /* the space between the start of your logo and your text */
     padding-top: 20px; /* the vertical space between the top and your text, to center the logo*/
     display: block; /* very important since normally anchors are inline */
-    width: 1280px;
+    width: 850px;
     height: 100px;
     border-bottom: 1px solid rgb(29, 14, 14);  
 
@@ -125,7 +125,7 @@ ul {
     color: #666;  
     font-size: 60%;
     margin: 20px auto 10px auto; 
-    width: 1280px;
+    width: 850px;
     padding: 5px 0;
     text-align: center;
     background: #F8F7F7;
