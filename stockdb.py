@@ -81,7 +81,3 @@ def getPlot(symbol,df,output_type='div'):
     fig = dict(data=data, layout=layout)
     div = plot(fig, output_type=output_type,config=dict(displayModeBar=True,showLink=False))
     return div  
-
-
-
-
