@@ -9,7 +9,10 @@
     padding-left: 0px; /* the space between the start of your logo and your text */
     padding-top: 20px; /* the vertical space between the top and your text, to center the logo*/
     display: block; /* very important since normally anchors are inline */
+    width: 1280px;
     height: 100px;
+    border-bottom: 1px solid rgb(29, 14, 14);  
+
 }
 .header a {
     vertical-align: middle;
@@ -65,7 +68,7 @@ ul {
 	margin-bottom:10px;
 	/* Clear floats */
 	float:left;
-	width:100%;
+    width:100%;
 	/* Bring the nav above everything else--uncomment if needed.
 	position:relative;
 	z-index:5;
@@ -105,7 +108,7 @@ ul {
 	white-space:nowrap; /* Stop text wrapping and creating multi-line dropdown items */
 }
 .nav li:hover ul{ /* Display the dropdown on hover */
-	left:0; /* Bring back on-screen when needed */
+	left:20px; /* Bring back on-screen when needed */
 }
 .nav li:hover a{ /* These create persistent hover states, meaning the top-most link stays 'hovered' even when your cursor has moved down the list. */
 	background:#5c5a7a;
@@ -117,6 +120,18 @@ ul {
 .nav li:hover ul li a:hover{ /* Here we define the most explicit hover states--what happens when you hover each individual link. */
 	background:#333;
 }
+/* footer */
+.footer {
+    color: #666;  
+    font-size: 60%;
+    margin: 20px auto 10px auto; 
+    width: 1280px;
+    padding: 5px 0;
+    text-align: center;
+    background: #F8F7F7;
+    border-top: 1px solid rgb(29, 14, 14);  
+}
+
 
 
 
