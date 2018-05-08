@@ -63,7 +63,7 @@ def getPlot(symbol,df,output_type='div'):
         dict(active=0,
              buttons=buttons,
              x=0.1,
-             y=1.1
+             y=1.2
         )
     ])
 
@@ -79,7 +79,7 @@ def getPlot(symbol,df,output_type='div'):
     
     data = traces
     fig = dict(data=data, layout=layout)
-    div = plot(fig, output_type=output_type,config=dict(displayModeBar=True))
+    div = plot(fig, output_type=output_type,config=dict(displayModeBar=True,showLink=False))
     return div  
 
 
