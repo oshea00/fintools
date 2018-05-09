@@ -15,7 +15,7 @@ plotly = "*"
 numpy = "*"
 pandas = "*"
 quandl = "*"
-pandas-datareader = "*"
+pandas-datareader = "==0.5.0"
 rq = "*"
 
 [dev-packages]
