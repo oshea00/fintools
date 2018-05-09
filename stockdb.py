@@ -13,6 +13,13 @@ def getLast30days(symbol,src = 'yahoo'):
     js = df.to_json()
     return js
 
+def getLastNdays(symbol,days,src = 'yahoo'):
+    end = dt.datetime.now()
+    start = end - dt.timedelta(days=days)
+    df = pdr.DataReader(symbol, src, start, end)
+    js = df.to_json()
+    return js
+
 def saveData(symbol,jsstr,dburl):
     conn = pg.connect(dburl)
     cur = conn.cursor()
@@ -81,3 +88,9 @@ def getPlot(symbol,df,output_type='div'):
     fig = dict(data=data, layout=layout)
     div = plot(fig, output_type=output_type,config=dict(displayModeBar=True,showLink=False))
     return div  
+
+def update_prices(symbol,url):
+    js = getLastNdays(symbol,90)
+    if jsstr != None:
+        saveData(symbol,jsstr,url)
+
