@@ -91,6 +91,6 @@ def getPlot(symbol,df,output_type='div'):
 
 def update_prices(symbol,url):
     js = getLastNdays(symbol,90)
-    if jsstr != None:
-        saveData(symbol,jsstr,url)
+    if js != None:
+        saveData(symbol,js,url)
 
