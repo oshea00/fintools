@@ -16,6 +16,7 @@ numpy = "*"
 pandas = "*"
 quandl = "*"
 pandas-datareader = "*"
+rq = "*"
 
 [dev-packages]
 
