@@ -9,5 +9,5 @@ q = Queue(connection=conn)
 
 q.enqueue(update_prices,'GOOG',dburl)
 
-
+print('Request for GOOG  received')
 
