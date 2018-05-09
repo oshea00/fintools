@@ -9,9 +9,9 @@ dburl = os.getenv('DATABASE_URL')
 q = Queue(connection=conn)
 
 q.enqueue(update_prices,'GOOG',dburl)
-time.sleep(10)
+time.sleep(20)
 q.enqueue(update_prices,'AAPL',dburl)
-time.sleep(10)
+time.sleep(20)
 q.enqueue(update_prices,'FB',dburl)
 
 
