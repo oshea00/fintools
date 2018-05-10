@@ -60,26 +60,6 @@ def plot_portfolio():
             chart="No Data",
             annotation='Source: Future Trends Consulting')
 
-@app.route("/symdata",methods=['PUT'])
-def sym_data():
-    if request.content_length < 50000:
-        r=""
-        try:
-            r = json.loads(request.data)
-            if 'symbol' in r:
-                symbol = r['symbol']
-                js = r['js']
-                stockdb.saveData(symbol,js,DATABASE_URL)
-                msg = str.format("added {}",symbol)
-                app.logger.info(msg)
-                return msg, 200
-            else:
-                return "bad file", 413
-        except Exception as ex:
-            app.logger.warn(ex)
-    else:
-        return "bad file", 413
-
 @app.route("/stockchart/<string:ticker>",methods=['GET'])
 def stock_chart(ticker):
     title = "Stock Chart"
