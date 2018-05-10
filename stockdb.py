@@ -105,48 +105,6 @@ def getPlot(symbol,name,df,output_type='div'):
     div = plot(fig, output_type=output_type,config=dict(displayModeBar=True,showLink=False))
     return div  
 
-def getPlots(df,output_type='div'):
-    traces = []
-    for i,d in enumerate(dflist):
-        traces.append(go.Scatter(
-            x = d.index,
-            y = d['Adj Close'],
-            mode = 'lines',
-            name = str.format('Adj Close {}',labels[i]),
-            visible = True if i==0 else False
-        ))
-
-    buttons = []
-    for i,t in enumerate(traces):
-        buttons.append(
-            dict(label = t.name,
-                 method = 'update',
-                 args = [{'visible': vis[i]}])
-        )
-        
-    updatemenus = list([
-        dict(active=0,
-             buttons=buttons,
-             x=0.1,
-             y=1.2
-        )
-    ])
-
-    layout = dict(
-        hovermode = 'closest',
-        showlegend = False,
-        title = str.format('{} Price',symbol),
-        yaxis = dict(title = 'Adj Close Price'),
-        xaxis = dict(title = 'Date'),
-        plot_bgcolor = '#E2E3E5',
-        updatemenus=updatemenus
-    )
-    
-    data = traces
-    fig = dict(data=data, layout=layout)
-    div = plot(fig, output_type=output_type,config=dict(displayModeBar=True,showLink=False))
-    return div  
-
 def normPortfolio(symbols,dburl):
     dfs = []
     for s in symbols:
