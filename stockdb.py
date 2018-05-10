@@ -21,10 +21,10 @@ def getLastNdays(symbol,days,src = 'yahoo'):
     js = df.to_json()
     return js
 
-def saveData(symbol,jsstr,dburl):
+def saveData(symbol,name,jsstr,dburl):
     conn = pg.connect(dburl)
     cur = conn.cursor()
-    cur.execute('insert into stockdata (symbol,csvdata) values (%s,%s)',(symbol,jsstr))
+    cur.execute('insert into stockdata (symbol,name,csvdata) values (%s,%s,%s)',(symbol,name,jsstr))
     conn.commit()
     cur.close()
     conn.close()
@@ -33,7 +33,7 @@ def getSymbolData(symbol,dburl):
     try:
         conn = pg.connect(dburl)
         cur = conn.cursor()
-        cur.execute('select * from stockdata where symbol = %s order by created desc limit 1',(symbol,))
+        cur.execute('select symbol, csvdata from stockdata where symbol = %s order by created desc limit 1',(symbol,))
         rows = cur.fetchall()
         cur.close()
         conn.close()   
@@ -183,8 +183,8 @@ def plotTraces(traces,title,xaxis_label,yaxis_label,output_type='div'):
     div = plot(fig, output_type=output_type,config=dict(displayModeBar=True,showLink=False))
     return div  
 
-def update_prices(symbol,url):
+def update_prices(symbol,name,url):
     js = getLastNdays(symbol,90)
     if js != None:
-        saveData(symbol,js,url)
+        saveData(symbol,name,js,url)
 
