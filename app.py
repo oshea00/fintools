@@ -28,7 +28,36 @@ except:
 
 @app.route("/",methods=['GET'])
 def get_index():
-    return render_template('index.html')
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    return render_template('index.html',symbols=symbols)
+
+@app.route("/portfolio",methods=['GET'])
+def get_portfolio():
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    return render_template('portfolio.html',
+        symbols=symbols,
+        title='Portfolio Analysis')
+
+@app.route("/plotportfolio",methods=['POST'])
+def plot_portfolio():
+    if 'ticker' not in request.form:
+        return 'No Portfolio Chosen', 405
+    tickers = request.form.getlist('ticker')
+    if len(tickers) > 0:
+        df = stockdb.normPortfolio(tickers,DATABASE_URL)
+        traces = stockdb.createTraces(df)
+        div = stockdb.plotTraces(traces,'Returns','Data','Return')
+        return render_template('portfolio.html',
+            symbols=tickers,
+            title='Portfolio Analysis',
+            chart=div,
+            annotation='Source: Future Trends Consulting')
+    else:
+        return render_template('portfolio.html',
+            symbols=[],
+            title='Portfolio Analysis',
+            chart="No Data",
+            annotation='Source: Future Trends Consulting')
 
 @app.route("/symdata",methods=['PUT'])
 def sym_data():

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+<link href='https://fonts.googleapis.com/css?family=Cousine' rel='stylesheet'>
+<link href='/static/style.css' rel='stylesheet'/>
+<link rel="shortcut icon" href="/static/favicon.ico"/>
+<title>{{title}}</title>
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="content">
+        <h1>{{title}}</h1>
+        <div class="portfolio">
+            <form action="{{ url_for('plot_portfolio') }}" method="post">
+                {% for s in symbols %}
+                    <input type="checkbox" name="ticker" value="{{s}}">{{s}}</input>
+                {% endfor %}
+                <input type="submit" value="Analyze"/>
+            </form>
+        </div>
+    </div>
+    {{ chart | safe }}
+    <p class="annotation">{{annotation}}</p>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% include "footer.html" %}
+</body>
+</html>

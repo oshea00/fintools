@@ -10,16 +10,17 @@
     {% include "header.html" %}
     <div class="content">
     <h1>Finance Tools</h1>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-    {{ chart|safe }}
-
     <ul class="nav">
         <li><a href="#">Charts</a>
             <ul>
-                <li><a href="{{ url_for('stock_chart',ticker='goog') }}">Google</a></li>
-                <li><a href="{{ url_for('stock_chart',ticker='aapl') }}">Apple</a></li>
-                <li><a href="{{ url_for('stock_chart',ticker='fb') }}">Facebook</a></li>
+                {% for s in symbols %}
+                    <li><a href="{{ url_for('stock_chart',ticker=s) }}">{{ s }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li><a href="#">Analyses</a>
+            <ul>
+                <li><a href="{{ url_for('get_portfolio') }}">Portfolio Analysis</a></li>
             </ul>
         </li>
     </ul>
