@@ -14,7 +14,7 @@
         <li><a href="#">Charts</a>
             <ul>
                 {% for s in symbols %}
-                    <li><a href="{{ url_for('stock_chart',ticker=s) }}">{{ s }}</a></li>
+                    <li><a href="{{ url_for('stock_chart',ticker=s[0]) }}">{{ s[1] }}</a></li>
                 {% endfor %}
             </ul>
         </li>

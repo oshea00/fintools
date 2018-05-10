@@ -47,18 +47,18 @@ def getSymbols(dburl):
     try:
         conn = pg.connect(dburl)
         cur = conn.cursor()
-        cur.execute('select distinct symbol from stockdata order by symbol')
+        cur.execute('select distinct symbol, name from stockdata order by symbol')
         rows = cur.fetchall()
         cur.close()
         conn.close()
-        symbols = [r[0] for r in rows]   
+        symbols = [(r[0],r[1]) for r in rows]   
     except:
         return None
     else:
         return symbols
 
 
-def getPlot(symbol,df,output_type='div'):
+def getPlot(symbol,name,df,output_type='div'):
     labels = ["All Days","Last 30","Last 60","Last 90"]
     vis = [[True,False,False,False],
            [False,True,False,False],
@@ -93,7 +93,7 @@ def getPlot(symbol,df,output_type='div'):
     layout = dict(
         hovermode = 'closest',
         showlegend = False,
-        title = str.format('{} Price',symbol),
+        title = str.format('{} Price',name),
         yaxis = dict(title = 'Adj Close Price'),
         xaxis = dict(title = 'Date'),
         plot_bgcolor = '#E2E3E5',

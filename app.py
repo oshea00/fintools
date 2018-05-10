@@ -43,12 +43,13 @@ def plot_portfolio():
     if 'ticker' not in request.form:
         return 'No Portfolio Chosen', 405
     tickers = request.form.getlist('ticker')
+    symbols = stockdb.getSymbols(DATABASE_URL)
     if len(tickers) > 0:
         df = stockdb.normPortfolio(tickers,DATABASE_URL)
         traces = stockdb.createTraces(df)
         div = stockdb.plotTraces(traces,'Returns','Data','Return')
         return render_template('portfolio.html',
-            symbols=tickers,
+            symbols=symbols,
             title='Portfolio Analysis',
             chart=div,
             annotation='Source: Future Trends Consulting')
@@ -83,12 +84,17 @@ def sym_data():
 def stock_chart(ticker):
     title = "Stock Chart"
     symbol = ticker.upper()
+    chartname = ticker
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    name = [n for s,n in symbols if s == symbol]
+    if (len(name)>0):
+        chartname = name[0]
     df = stockdb.getSymbolData(symbol,DATABASE_URL)
     if df is not None:
         df20 = df.iloc[-20:]
         df40 = df.iloc[-40:]
         df60 = df.iloc[-60:]
-        div = stockdb.getPlot(symbol,[df,df20,df40,df60])
+        div = stockdb.getPlot(symbol,chartname,[df,df20,df40,df60])
         return render_template('stock.html',title=title,chart=div,annotation='Source: Yahoo Finance')
     else:
         return render_template('stock.html',

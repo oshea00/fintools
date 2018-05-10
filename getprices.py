@@ -8,16 +8,16 @@ dburl = os.getenv('DATABASE_URL')
 
 q = Queue(connection=conn)
 
-q.enqueue(update_prices,'GOOG',dburl)
+q.enqueue(update_prices,'GOOG','Google',dburl)
 time.sleep(30)
-q.enqueue(update_prices,'AAPL',dburl)
+q.enqueue(update_prices,'AAPL','Apple',dburl)
 time.sleep(30)
-q.enqueue(update_prices,'CSCO',dburl)
+q.enqueue(update_prices,'CSCO','Cisco',dburl)
 time.sleep(30)
-q.enqueue(update_prices,'AMZN',dburl)
+q.enqueue(update_prices,'AMZN','Amazon',dburl)
 time.sleep(30)
-q.enqueue(update_prices,'CAT',dburl)
+q.enqueue(update_prices,'CAT','Caterpillar',dburl)
 time.sleep(30)
-q.enqueue(update_prices,'FB',dburl)
+q.enqueue(update_prices,'FB','Facebook',dburl)
 
 

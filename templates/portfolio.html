@@ -11,11 +11,12 @@
     <div class="content">
         <h1>{{title}}</h1>
         <div class="portfolio">
+            <p>Choose Stocks:</p>
             <form action="{{ url_for('plot_portfolio') }}" method="post">
                 {% for s in symbols %}
-                    <input type="checkbox" name="ticker" value="{{s}}">{{s}}</input>
+                    <input type="checkbox" name="ticker" value="{{s[0]}}">{{s[1]}}</input>
                 {% endfor %}
-                <input type="submit" value="Analyze"/>
+                <br/><input id="analyze" type="submit" value="Analyze"/>
             </form>
         </div>
     </div>
