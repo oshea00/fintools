@@ -1,29 +1,17 @@
 <!doctype html>
 <html>
 <head>
-<link href='https://fonts.googleapis.com/css?family=Cousine' rel='stylesheet'>
-<link href='/static/style.css' rel='stylesheet'/>
-<link rel="shortcut icon" href="/static/favicon.ico"/>
+{% include "stylelinks.html" %}
 <title>Finance Tools</title>
 </head>
 <body>
     {% include "header.html" %}
     <div class="content">
     <h1>Finance Tools</h1>
-    <ul class="nav">
-        <li><a href="#">Charts</a>
-            <ul>
-                {% for s in symbols %}
-                    <li><a href="{{ url_for('stock_chart',ticker=s[0]) }}">{{ s[1] }}</a></li>
-                {% endfor %}
-            </ul>
-        </li>
-        <li><a href="#">Analyses</a>
-            <ul>
-                <li><a href="{{ url_for('get_portfolio') }}">Portfolio Analysis</a></li>
-            </ul>
-        </li>
-    </ul>
+    <div>
+        Examples of various financial tools and visualizations can be found here.<br/>
+        Tryout the items in the above menu.
+    </div>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>

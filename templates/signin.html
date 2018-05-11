@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+{% include "stylelinks.html" %}
+<title>Finance Tools Signin</title>
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="content">
+    <h1>Sign In</h1>
+    <form action="{{ url_for('signin') }}" method="POST">
+        <div class="form-group row">
+            <label for="exampleInputEmail1" class="col-sm-1 col-form-label">Email</label>
+            <div class="col-sm-4">
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="exampleInputPassword1" class="col-sm-1 col-form-label">Password</label>
+            <div class="col-sm-4">
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div>
+    {% include "footer.html" %}
+</body>
+</html>

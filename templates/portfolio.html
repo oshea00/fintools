@@ -1,40 +1,46 @@
 <!doctype html>
 <html>
 <head>
-<link href='https://fonts.googleapis.com/css?family=Cousine' rel='stylesheet'>
-<link href='/static/style.css' rel='stylesheet'/>
-<link rel="shortcut icon" href="/static/favicon.ico"/>
+{% include "stylelinks.html" %}
 <title>{{title}}</title>
 </head>
 <body>
     {% include "header.html" %}
     <div class="content">
         <h1>{{title}}</h1>
-        <div class="portfolio">
             <p>Choose Stocks:</p>
             <form action="{{ url_for('plot_portfolio') }}" method="post">
-                {% for s in symbols %}
-                    <input type="checkbox" name="ticker" value="{{s[0]}}">{{s[1]}}</input>
+                <div class="input-group">
+                {% for s in symbols %}                      
+                <div class="input-group-prepend">
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" id="customCheckInline{{loop.index}}" name="ticker" value="{{s[0]}}" class="custom-control-input">
+                        <label class="custom-control-label" for="customCheckInline{{loop.index}}">{{s[1]}}</label>
+                    </div>        
+                </div>
                 {% endfor %}
-                <br/><input id="analyze" type="submit" value="Analyze"/>
+                </div>
+                <br/>
+                <button class="btn btn-primary" type="submit">Analyze</button>
             </form>
+        {{ chart | safe }}
+        {% if chart is defined %}
+        <h4>Optimal Portfolio Allocation</h4>
+        {% endif %}
+        <table class="allocation">
+            {% for a in allocations %}
+            <tr>
+                <td>{{a[0]}}</td>
+                <td>{{a[1]}}&percnt;</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div clas="content">
+            {{ frontier | safe }}
+            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         </div>
+        <p class="annotation">{{annotation}}</p>
     </div>
-    {{ chart | safe }}
-    <h4>Optimal Portfolio Allocation</h4>
-    <table class="allocation">
-        {% for a in allocations %}
-        <tr>
-            <td>{{a[0]}}</td>
-            <td>{{a[1]}}&percnt;</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <div clas="content">
-        {{ frontier | safe }}
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    </div>
-    <p class="annotation">{{annotation}}</p>
 {% include "footer.html" %}
 </body>
 </html>

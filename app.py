@@ -31,6 +31,11 @@ def get_index():
     symbols = stockdb.getSymbols(DATABASE_URL)
     return render_template('index.html',symbols=symbols)
 
+@app.route("/signin")
+def signin():
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    return render_template('signin.html',symbols=symbols)    
+
 @app.route("/portfolio",methods=['GET'])
 def get_portfolio():
     symbols = stockdb.getSymbols(DATABASE_URL)
@@ -47,7 +52,7 @@ def plot_portfolio():
     if len(tickers) > 0:
         df = stockdb.getPortfolioPrices(tickers,DATABASE_URL)
         traces = stockdb.createTraces(df/df.iloc[0])
-        div = stockdb.plotTraces(traces,'Returns','Data','Return')
+        div = stockdb.plotTraces(traces,'Returns','Date','Return')
         vol_arr, ret_arr, sharpe_arr, max_sr_vol, max_sr_ret = stockdb.monteCarloPortfolios(df,1000)
         divfr = stockdb.frontierPlot(vol_arr,ret_arr,sharpe_arr,500,800,max_sr_vol,max_sr_ret)
         allocations = stockdb.getOptimalAllocation(df)
@@ -60,7 +65,7 @@ def plot_portfolio():
             annotation='Source: Future Trends Consulting')
     else:
         return render_template('portfolio.html',
-            symbols=[],
+            symbols=symbols,
             title='Portfolio Analysis',
             chart="No Data",
             annotation='Source: Future Trends Consulting')
@@ -80,7 +85,7 @@ def stock_chart(ticker):
         df40 = df.iloc[-40:]
         df60 = df.iloc[-60:]
         div = stockdb.getPlot(symbol,chartname,[df,df20,df40,df60])
-        return render_template('stock.html',title=title,chart=div,annotation='Source: Yahoo Finance')
+        return render_template('stock.html',title=title,chart=div,symbols=symbols,annotation='Source: Yahoo Finance')
     else:
         return render_template('stock.html',
             title=title,
