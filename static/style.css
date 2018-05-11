@@ -141,7 +141,9 @@ ul {
     font-size: 14px;
     font-weight: bolder;
 }
-
+.allocation {
+    width: 250px; 
+}
 
 
 

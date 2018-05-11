@@ -6,6 +6,8 @@ import psycopg2.extras
 import numpy as np
 from plotly.offline import plot, iplot
 import plotly.graph_objs as go
+from scipy.optimize import minimize
+import numpy as np
 
 def getLast30days(symbol,src = 'yahoo'):
     end = dt.datetime.now()
@@ -57,6 +59,59 @@ def getSymbols(dburl):
     else:
         return symbols
 
+def frontierPlot(vol_arr,ret_arr,sharpe_arr,height,width,max_sr_vol,max_sr_ret,output_type='div'):
+    trace = go.Scatter(
+        x = vol_arr,
+        y = ret_arr,
+        mode='markers',
+        marker=dict(
+            size='8',
+            color = sharpe_arr, #set color equal to a variable
+            colorscale='Portland',
+            colorbar = dict(title='Sharpe Ratio'),
+            showscale=True
+        )
+    )
+
+    xsize = vol_arr.max()-vol_arr.min()
+    ysize = ret_arr.max()-ret_arr.min()
+    markerxradius = 0.015 * xsize 
+    markeryradius = 0.015 * ysize * (width/height)
+
+    layout = dict(
+        hovermode = 'closest',
+        height = height,
+        width = width,
+        yaxis = dict(title = 'Return'),
+        xaxis = dict(title = 'Risk'),
+        title = 'Efficient Frontier',
+        plot_bgcolor = '#E2E3E5',
+        shapes = [
+            dict(
+                type='circle',
+                x0=max_sr_vol-(markerxradius),
+                x1=max_sr_vol+(markerxradius),
+                y0=max_sr_ret-(markeryradius),
+                y1=max_sr_ret+(markeryradius),
+                xref='x',
+                yref='y',
+                fillcolor='rgba(255,0,0,1)',
+                line=dict(
+                    width=3,
+                    color='rgba(0,0,0,1)'
+                )
+            )
+        ]
+    )
+
+    data = [trace]
+
+    fig = dict(
+        data=data, 
+        layout=layout)    
+
+    div = plot(fig, output_type=output_type,config=dict(displayModeBar=True,showLink=False))
+    return div  
 
 def getPlot(symbol,name,df,output_type='div'):
     labels = ["All Days","Last 30","Last 60","Last 90"]
@@ -146,3 +201,82 @@ def update_prices(symbol,name,url):
     if js != None:
         saveData(symbol,name,js,url)
 
+def get_ret_vol_sr(weights,stocks):
+    """
+    Takes in weights, returns array of return, volatility, sharpe ratio.
+    assumes data is daily - conversion 252
+    """
+    log_ret = np.log(stocks/stocks.shift(1))
+    weights = np.array(weights)
+    ret = np.sum(log_ret.mean() * weights) * 252
+    vol = np.sqrt(np.dot(weights.T, np.dot(log_ret.cov() * 252, weights)))
+    shrp = ret/vol
+    return np.array([ret,vol,shrp])
+
+def neg_sharpe(weights,stocks):
+    ''' Given some weights we calculate the sharp ratio. Since this is a minimization problem. we express
+        the negative result
+    '''
+    return  get_ret_vol_sr(weights,stocks)[2] * -1
+
+# Contraints - on the the input weights
+def check_sum(weights):
+    '''
+    Returns 0 (ok) if sum of weights is 1.0
+    '''
+    return np.sum(weights) - 1
+
+def getPortfolioPrices(symbols,dburl):
+    dfs = []
+    for s in symbols:
+        dfs.append(getSymbolData(s,dburl)['Adj Close'])
+    df = pd.concat(dfs,axis=1)
+    df.columns = symbols
+    df = df.dropna()
+    return df
+
+def normPortfolio(symbols,dburl):
+    df = getPortfolioPrices(symbols,dburl)
+    df = df/df.shift(1)
+    return df.iloc[1:]
+
+def monteCarloPortfolios(stocks,num_ports):
+    all_weights = np.zeros((num_ports,len(stocks.columns)))
+    ret_arr = np.zeros(num_ports)
+    vol_arr = np.zeros(num_ports)
+    sharpe_arr = np.zeros(num_ports)
+    log_ret = np.log(stocks/stocks.shift(1))
+
+    for ind in range(num_ports):
+
+        # Create Random Weights
+        weights = np.array(np.random.random(len(stocks.columns)))
+
+        # Rebalance Weights
+        weights = weights / np.sum(weights)
+
+        # Save Weights
+        all_weights[ind,:] = weights
+
+        # Expected Return
+        ret_arr[ind] = np.sum((log_ret.mean() * weights) *252)
+
+        # Expected Variance
+        vol_arr[ind] = np.sqrt(np.dot(weights.T, np.dot(log_ret.cov() * 252, weights)))
+
+        # Sharpe Ratio
+        sharpe_arr[ind] = ret_arr[ind]/vol_arr[ind]
+        
+    maxidx = sharpe_arr.argmax()
+    max_sr_ret = ret_arr[maxidx]
+    max_sr_vol = vol_arr[maxidx]
+    
+    return (vol_arr,ret_arr,sharpe_arr,max_sr_vol,max_sr_ret)
+
+def getOptimalAllocation(stocks):
+    cons = ({'type':'eq','fun': check_sum})
+    bounds = [(0,1)]*len(stocks.columns)
+    init_guess = np.array(([1.0]*len(stocks.columns)))/len(stocks.columns)
+    opt_results = minimize(neg_sharpe,init_guess,args=(stocks,),method='SLSQP',bounds=bounds,constraints=cons)
+    optimal_allocation = [a for a in zip(stocks.columns,np.round(opt_results.x*100,decimals=2))]
+    return optimal_allocation

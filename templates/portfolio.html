@@ -21,8 +21,20 @@
         </div>
     </div>
     {{ chart | safe }}
+    <h4>Optimal Portfolio Allocation</h4>
+    <table class="allocation">
+        {% for a in allocations %}
+        <tr>
+            <td>{{a[0]}}</td>
+            <td>{{a[1]}}&percnt;</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div clas="content">
+        {{ frontier | safe }}
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </div>
     <p class="annotation">{{annotation}}</p>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 {% include "footer.html" %}
 </body>
 </html>

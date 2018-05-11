@@ -45,13 +45,18 @@ def plot_portfolio():
     tickers = request.form.getlist('ticker')
     symbols = stockdb.getSymbols(DATABASE_URL)
     if len(tickers) > 0:
-        df = stockdb.normPortfolio(tickers,DATABASE_URL)
-        traces = stockdb.createTraces(df)
+        df = stockdb.getPortfolioPrices(tickers,DATABASE_URL)
+        traces = stockdb.createTraces(df/df.iloc[0])
         div = stockdb.plotTraces(traces,'Returns','Data','Return')
+        vol_arr, ret_arr, sharpe_arr, max_sr_vol, max_sr_ret = stockdb.monteCarloPortfolios(df,1000)
+        divfr = stockdb.frontierPlot(vol_arr,ret_arr,sharpe_arr,500,800,max_sr_vol,max_sr_ret)
+        allocations = stockdb.getOptimalAllocation(df)
         return render_template('portfolio.html',
             symbols=symbols,
             title='Portfolio Analysis',
             chart=div,
+            frontier=divfr,
+            allocations=[a for a in allocations if a[1] > 0],
             annotation='Source: Future Trends Consulting')
     else:
         return render_template('portfolio.html',
