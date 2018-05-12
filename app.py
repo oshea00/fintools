@@ -85,14 +85,12 @@ def plot_portfolio():
         div = stockdb.plotTraces(traces,'Returns','Date','Return')
         vol_arr, ret_arr, sharpe_arr, max_sr_vol, max_sr_ret = stockdb.monteCarloPortfolios(df,1000)
         divfr = stockdb.frontierPlot(vol_arr,ret_arr,sharpe_arr,500,800,max_sr_vol,max_sr_ret)
-        scatter = stockdb.plotScatter(df,800,800)
         allocations = stockdb.getOptimalAllocation(df)
         return render_template('portfolio.html',
             symbols=symbols,
             title='Portfolio Analysis',
             chart=div,
             frontier=divfr,
-            scatter=scatter,
             allocations=[a for a in allocations if a[1] > 0],
             annotation='Source: Future Trends Consulting')
     else:

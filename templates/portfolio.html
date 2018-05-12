@@ -39,10 +39,6 @@
             {{ frontier | safe }}
             <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         </div>
-        {% if scatter is defined %}
-        <h4>Correlation of Portfolio Assets</h4>
-        {{ scatter | safe }}
-        {% endif %}
         <p class="annotation">{{annotation}}</p>
     </div>
 {% include "footer.html" %}
