@@ -19,7 +19,6 @@ pandas-datareader = "==0.5.0"
 rq = "*"
 scikit-learn = "*"
 scipy = "*"
-matplotlib = "*"
 
 [dev-packages]
 
