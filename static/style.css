@@ -2,6 +2,11 @@
 {
     * {-webkit-print-color-adjust:exact;}
 }
+@media (min-width: 1200px) {
+    .container{
+        max-width: 1200px;
+    }
+}
 .header {
     margin: 0px auto;
     font-size: 25px;
