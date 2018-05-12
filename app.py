@@ -36,6 +36,36 @@ def signin():
     symbols = stockdb.getSymbols(DATABASE_URL)
     return render_template('signin.html',symbols=symbols)    
 
+@app.route("/corr",methods=['GET'])
+def get_correlation():
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    return render_template('corr.html',
+        symbols=symbols,
+        title='Asset Correlation')
+
+@app.route("/corr",methods=['POST'])
+def plot_correlation():
+    if 'ticker' not in request.form:
+        return 'No Assets Chosen', 405
+    tickers = request.form.getlist('ticker')
+    if len(tickers)<2:
+        return 'Choose at least two assets', 405
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    if len(tickers) > 0:
+        df = stockdb.getPortfolioPrices(tickers,DATABASE_URL)
+        scatter = stockdb.plotScatter(df,800,800)
+        return render_template('corr.html',
+            symbols=symbols,
+            title='Asset Correlation',
+            scatter=scatter,
+            annotation='Source: Future Trends Consulting')
+    else:
+        return render_template('corr.html',
+            symbols=symbols,
+            title='Asset Correlation',
+            chart="No Data",
+            annotation='Source: Future Trends Consulting')
+
 @app.route("/portfolio",methods=['GET'])
 def get_portfolio():
     symbols = stockdb.getSymbols(DATABASE_URL)
@@ -55,12 +85,14 @@ def plot_portfolio():
         div = stockdb.plotTraces(traces,'Returns','Date','Return')
         vol_arr, ret_arr, sharpe_arr, max_sr_vol, max_sr_ret = stockdb.monteCarloPortfolios(df,1000)
         divfr = stockdb.frontierPlot(vol_arr,ret_arr,sharpe_arr,500,800,max_sr_vol,max_sr_ret)
+        scatter = stockdb.plotScatter(df,800,800)
         allocations = stockdb.getOptimalAllocation(df)
         return render_template('portfolio.html',
             symbols=symbols,
             title='Portfolio Analysis',
             chart=div,
             frontier=divfr,
+            scatter=scatter,
             allocations=[a for a in allocations if a[1] > 0],
             annotation='Source: Future Trends Consulting')
     else:

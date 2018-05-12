@@ -5,6 +5,7 @@ import psycopg2 as pg
 import psycopg2.extras
 import numpy as np
 from plotly.offline import plot, iplot
+import plotly.figure_factory as ff
 import plotly.graph_objs as go
 from scipy.optimize import minimize
 import numpy as np
@@ -280,3 +281,9 @@ def getOptimalAllocation(stocks):
     opt_results = minimize(neg_sharpe,init_guess,args=(stocks,),method='SLSQP',bounds=bounds,constraints=cons)
     optimal_allocation = [a for a in zip(stocks.columns,np.round(opt_results.x*100,decimals=2))]
     return optimal_allocation
+
+def plotScatter(df, height, width):
+    fig = ff.create_scatterplotmatrix(df.pct_change(1), diag='histogram', height=height, width=width)
+    div = plot(fig, output_type='div',config=dict(displayModeBar=True,showLink=False))
+    return div
+
