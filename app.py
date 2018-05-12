@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, flash, url_for
 import json
 import uuid
 import psycopg2
@@ -10,6 +10,7 @@ import quandl
 import stockdb
 
 app = Flask(__name__)
+app.secret_key = "\x8e\xea\x1f\xf8\x10I\x16\xbf\x85|\x8bQ>a\xaam\xff:+\x1d\xf8,(\xdf)ku\xa0\xe9x\xb9@"
 
 if __name__ !=  "__main__":
     gunicorn_logger = logging.getLogger('gunicorn.error')
@@ -46,10 +47,12 @@ def get_correlation():
 @app.route("/corr",methods=['POST'])
 def plot_correlation():
     if 'ticker' not in request.form:
-        return 'No Assets Chosen', 405
+        flash('No Assets Chosen')
+        return redirect(url_for('get_correlation'))
     tickers = request.form.getlist('ticker')
     if len(tickers)<2:
-        return 'Choose at least two assets', 405
+        flash('Choose at least two stocks.')
+        return redirect(url_for('get_correlation'))
     symbols = stockdb.getSymbols(DATABASE_URL)
     if len(tickers) > 0:
         df = stockdb.getPortfolioPrices(tickers,DATABASE_URL)
@@ -58,12 +61,6 @@ def plot_correlation():
             symbols=symbols,
             title='Asset Correlation',
             scatter=scatter,
-            annotation='Source: Future Trends Consulting')
-    else:
-        return render_template('corr.html',
-            symbols=symbols,
-            title='Asset Correlation',
-            chart="No Data",
             annotation='Source: Future Trends Consulting')
 
 @app.route("/portfolio",methods=['GET'])
@@ -76,7 +73,8 @@ def get_portfolio():
 @app.route("/plotportfolio",methods=['POST'])
 def plot_portfolio():
     if 'ticker' not in request.form:
-        return 'No Portfolio Chosen', 405
+        flash('No Portfolio Chosen')
+        return redirect(url_for('get_portfolio'))
     tickers = request.form.getlist('ticker')
     symbols = stockdb.getSymbols(DATABASE_URL)
     if len(tickers) > 0:
@@ -92,12 +90,6 @@ def plot_portfolio():
             chart=div,
             frontier=divfr,
             allocations=[a for a in allocations if a[1] > 0],
-            annotation='Source: Future Trends Consulting')
-    else:
-        return render_template('portfolio.html',
-            symbols=symbols,
-            title='Portfolio Analysis',
-            chart="No Data",
             annotation='Source: Future Trends Consulting')
 
 @app.route("/stockchart/<string:ticker>",methods=['GET'])

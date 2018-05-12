@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+{% include "stylelinks.html" %}
+<title>Finance Tools</title>
+</head>
+{% include "header.html" %}
+<body>
+{% block body %}
+{% endblock %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="content">
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    </div>
+  {% endif %}
+{% endwith %}
+{% include "footer.html" %}
+</body>
+</html>

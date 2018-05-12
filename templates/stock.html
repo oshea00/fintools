@@ -1,17 +1,9 @@
-<!doctype html>
-<html>
-<head>
-{% include "stylelinks.html" %}
-<title>{{title}}</title>
-</head>
-<body>
-    {% include "header.html" %}
-    <div class="content">
-        <h1>{{title}}</h1>
-        {{ chart|safe }}
-        <p class="annotation">{{annotation}}</p>
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    </div>
-    {% include "footer.html" %}
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+<div class="content">
+    <h1>{{title}}</h1>
+    {{ chart|safe }}
+    <p class="annotation">{{annotation}}</p>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</div>
+{% endblock %}

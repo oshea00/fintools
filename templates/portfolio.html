@@ -1,46 +1,38 @@
-<!doctype html>
-<html>
-<head>
-{% include "stylelinks.html" %}
-<title>{{title}}</title>
-</head>
-<body>
-    {% include "header.html" %}
-    <div class="content">
-        <h1>{{title}}</h1>
-            <p>Choose Stocks:</p>
-            <form action="{{ url_for('plot_portfolio') }}" method="post">
-                <div class="input-group">
-                {% for s in symbols %}                      
-                <div class="input-group-prepend">
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input type="checkbox" id="customCheckInline{{loop.index}}" name="ticker" value="{{s[0]}}" class="custom-control-input">
-                        <label class="custom-control-label" for="customCheckInline{{loop.index}}">{{s[1]}}</label>
-                    </div>        
-                </div>
-                {% endfor %}
-                </div>
-                <br/>
-                <button class="btn btn-primary" type="submit">Analyze</button>
-            </form>
-        {{ chart | safe }}
-        {% if chart is defined %}
-        <h4>Optimal Portfolio Allocation</h4>
-        {% endif %}
-        <table class="allocation">
-            {% for a in allocations %}
-            <tr>
-                <td>{{a[0]}}</td>
-                <td>{{a[1]}}&percnt;</td>
-            </tr>
+{% extends "layout.html" %}
+{% block body %}
+<div class="content">
+    <h1>{{title}}</h1>
+        <p>Choose Stocks:</p>
+        <form action="{{ url_for('plot_portfolio') }}" method="post">
+            <div class="input-group">
+            {% for s in symbols %}                      
+            <div class="input-group-prepend">
+                <div class="custom-control custom-checkbox custom-control-inline">
+                    <input type="checkbox" id="customCheckInline{{loop.index}}" name="ticker" value="{{s[0]}}" class="custom-control-input">
+                    <label class="custom-control-label" for="customCheckInline{{loop.index}}">{{s[1]}}</label>
+                </div>        
+            </div>
             {% endfor %}
-        </table>
-        <div clas="content">
-            {{ frontier | safe }}
-            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-        </div>
-        <p class="annotation">{{annotation}}</p>
+            </div>
+            <br/>
+            <button class="btn btn-primary" type="submit">Analyze</button>
+        </form>
+    {{ chart | safe }}
+    {% if chart is defined %}
+    <h4>Optimal Portfolio Allocation</h4>
+    {% endif %}
+    <table class="allocation">
+        {% for a in allocations %}
+        <tr>
+            <td>{{a[0]}}</td>
+            <td>{{a[1]}}&percnt;</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div clas="content">
+        {{ frontier | safe }}
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     </div>
-{% include "footer.html" %}
-</body>
-</html>
+    <p class="annotation">{{annotation}}</p>
+</div>
+{% endblock %}
