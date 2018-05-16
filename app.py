@@ -62,18 +62,18 @@ def get_index():
     symbols = stockdb.getSymbols(DATABASE_URL)
     return render_template('index.html',symbols=symbols)
 
-@app.route("/signin")
+@app.route("/signin",methods=['GET','POST'])
 def signin():
     symbols = stockdb.getSymbols(DATABASE_URL)
-    if flask.request.method == 'GET':
+    if request.method == 'GET':
         return render_template('signin.html',symbols=symbols)  
-    email = flask.request.form['email']
+    email = request.form['email']
     # replace password check by unencrypting password from user record
-    if flask.request.form['password'] == users[email]['password']:
+    if request.form['password'] == users[email]['password']:
         user = User()
         user.id = email
         flask_login.login_user(user)
-        return flask.redirect(flask.url_for('protected'))
+        return redirect(url_for('protected'))
 
     flash('Bad login')
     return redirect(url_for('signin'))
