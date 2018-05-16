@@ -57,6 +57,8 @@ except:
 @app.route("/",methods=['GET'])
 def get_index():
     symbols = stockdb.getSymbols(DATABASE_URL)
+    for key in request.headers:
+        app.logger.warn(str.format("key: {}",key))
     return render_template('index.html',symbols=symbols)
 
 @app.route("/signin",methods=['GET','POST'])
