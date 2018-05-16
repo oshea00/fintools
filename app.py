@@ -23,7 +23,7 @@ def before_request():
     xforwarded_proto = ""
     if xforwarded_exists:
         forwarded_proto = request.headers.get('X-Forwarded-Proto')
-    if request.url.startswith('http://') and xforwarded_exists and forwarded_proto == 'http':
+    if xforwarded_exists and forwarded_proto == 'http':
         url = request.url.replace('http://', 'https://', 1)
         code = 301
         return redirect(url, code=code)
