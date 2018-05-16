@@ -15,7 +15,6 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   created timestamp default now()
 );
-create unique index usersix on users (email);
 
 INSERT INTO users (email, password) VALUES (
   'oshea00@gmail.com',
