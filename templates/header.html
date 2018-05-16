@@ -30,8 +30,18 @@
             </div>
         </li>
        </ul>
-       <span class="nav-item navbar-text">
-        Logged in: username
+       {% if current_user.is_authenticated %}
+       <span class="nav-item dropdown">
+           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               {{current_user.id}}
+           </a>
+           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+               <a class="dropdown-item" href="{{ url_for('signout') }}">Logoff</a>
+           </div>
+        </span>
+       {% else %}
+       <a class="nav-item navbar-text" href="{{ url_for('signin') }}">Login</a>
+       {% endif %}
     </span>
 </div>
   </nav>

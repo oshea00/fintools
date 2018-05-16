@@ -69,24 +69,25 @@ def signin():
         return render_template('signin.html',symbols=symbols)  
     email = request.form['email']
     # replace password check by unencrypting password from user record
-    if request.form['password'] == users[email]['password']:
-        user = User()
-        user.id = email
-        flask_login.login_user(user)
-        return redirect(url_for('protected'))
+    if email in users:
+        if request.form['password'] == users[email]['password']:
+            user = User()
+            user.id = email
+            flask_login.login_user(user)
+            return redirect(url_for('get_index'))
 
     flash('Bad login')
     return redirect(url_for('signin'))
       
 @app.route('/protected')
-#@flask_login.login_required
+@flask_login.login_required
 def protected():
     return 'Logged in as: ' + flask_login.current_user.id
 
 @app.route('/signout')
-def logout():
+def signout():
     flask_login.logout_user()
-    return 'Logged out'      
+    return redirect(url_for('get_index'))    
 
 @app.route("/corr",methods=['GET'])
 def get_correlation():
