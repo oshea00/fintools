@@ -20,7 +20,10 @@ login_manager.init_app(app)
 @app.before_request
 def before_request():
     xforwarded_exists = 'X-Forwarded-Proto' in request.headers
-    if request.url.startswith('http://') and xforwarded_exists:
+    xforwarded_proto = ""
+    if xforwarded_exists:
+        forwarded_proto = request.headers.get('X-Forwarded-Proto')
+    if request.url.startswith('http://') and xforwarded_exists and forwarded_proto == 'http':
         url = request.url.replace('http://', 'https://', 1)
         code = 301
         return redirect(url, code=code)
