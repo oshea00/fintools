@@ -17,6 +17,14 @@ app.secret_key = "\x8e\xea\x1f\xf8\x10I\x16\xbf\x85|\x8bQ>a\xaam\xff:+\x1d\xf8,(
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
+@app.before_request
+def before_request():
+    xforwarded_exists = 'X-Forwarded-Proto' in request.headers
+    if request.url.startswith('http://') and xforwarded_exists:
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
+
 @login_manager.user_loader
 def user_loader(email):
     if not userdb.userExists(DATABASE_URL,email):
@@ -57,8 +65,6 @@ except:
 @app.route("/",methods=['GET'])
 def get_index():
     symbols = stockdb.getSymbols(DATABASE_URL)
-    for key in request.headers:
-        app.logger.warn(str.format("key: {}",key))
     return render_template('index.html',symbols=symbols)
 
 @app.route("/signin",methods=['GET','POST'])
