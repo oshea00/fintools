@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, flash, url_for
-#import flask_login
+import flask_login
 import json
 import uuid
 import psycopg2
@@ -13,34 +13,34 @@ import stockdb
 app = Flask(__name__)
 app.secret_key = "\x8e\xea\x1f\xf8\x10I\x16\xbf\x85|\x8bQ>a\xaam\xff:+\x1d\xf8,(\xdf)ku\xa0\xe9x\xb9@"
 
-# users = {'foo@bar.tld': {'password': 'secret'}}
+users = {'foo@bar.tld': {'password': 'secret'}}
 
-# class User(flask_login.UserMixin):
-#     pass
+class User(flask_login.UserMixin):
+    pass
 
-# login_manager = flask_login.LoginManager()
-# login_manager.init_app(app)
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
 
-# @login_manager.user_loader
-# def user_loader(email):
-#     if email not in users:
-#         return
-#     user = User()
-#     user.id = email
-#     return user
+@login_manager.user_loader
+def user_loader(email):
+    if email not in users:
+        return
+    user = User()
+    user.id = email
+    return user
 
-# @login_manager.request_loader
-# def request_loader(request):
-#     email = request.form.get('email')
-#     # should replace with a db query
-#     if email not in users:
-#         return
-#     user = User()
-#     user.id = email
-#     # DO NOT ever store passwords in plaintext and always compare password
-#     # hashes using constant-time comparison!
-#     user.is_authenticated = request.form['password'] == users[email]['password']
-#     return user
+@login_manager.request_loader
+def request_loader(request):
+    email = request.form.get('email')
+    # should replace with a db query
+    if email not in users:
+        return
+    user = User()
+    user.id = email
+    # DO NOT ever store passwords in plaintext and always compare password
+    # hashes using constant-time comparison!
+    user.is_authenticated = request.form['password'] == users[email]['password']
+    return user
 
 if __name__ !=  "__main__":
     gunicorn_logger = logging.getLogger('gunicorn.error')
@@ -67,13 +67,13 @@ def signin():
     symbols = stockdb.getSymbols(DATABASE_URL)
     if flask.request.method == 'GET':
         return render_template('signin.html',symbols=symbols)  
-    # email = flask.request.form['email']
-    # # replace password check by unencrypting password from user record
-    # if flask.request.form['password'] == users[email]['password']:
-    #     user = User()
-    #     user.id = email
-    #     flask_login.login_user(user)
-    #     return flask.redirect(flask.url_for('protected'))
+    email = flask.request.form['email']
+    # replace password check by unencrypting password from user record
+    if flask.request.form['password'] == users[email]['password']:
+        user = User()
+        user.id = email
+        flask_login.login_user(user)
+        return flask.redirect(flask.url_for('protected'))
 
     flash('Bad login')
     return redirect(url_for('signin'))
