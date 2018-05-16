@@ -20,6 +20,7 @@ rq = "*"
 scikit-learn = "*"
 scipy = "*"
 flask-login = "*"
+sendgrid = "*"
 
 [dev-packages]
 

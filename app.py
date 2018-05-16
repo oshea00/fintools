@@ -10,6 +10,7 @@ import logging
 import quandl
 import stockdb
 import userdb
+import emailing
 
 app = Flask(__name__)
 app.secret_key = "\x8e\xea\x1f\xf8\x10I\x16\xbf\x85|\x8bQ>a\xaam\xff:+\x1d\xf8,(\xdf)ku\xa0\xe9x\xb9@"
@@ -65,6 +66,12 @@ except:
     app.logger.warn(str.format("I am unable to connect to database url {}",DATABASE_URL))
     exit()
 
+@app.route("/test")
+def test():
+    confirmationid = str(uuid.uuid4()).replace('-','')
+    emailing.sendWelcomeEmail("oshea00@gmail.com")
+    return redirect(url_for('get_index'))
+
 @app.route("/",methods=['GET'])
 def get_index():
     symbols = stockdb.getSymbols(DATABASE_URL)
@@ -76,6 +83,9 @@ def signin():
     if request.method == 'GET':
         return render_template('signin.html',symbols=symbols)  
     email = request.form['email']
+    if not userdb.userConfirmed(DATABASE_URL,email):
+        flash('Account unconfirmed. Please check your email for confirmation link.')
+        return redirect(url_for('signin'))       
     if userdb.authenticateUser(DATABASE_URL,email,request.form['password']):
         user = userdb.User()
         user.id = email
@@ -85,6 +95,32 @@ def signin():
     flash('Bad login')
     return redirect(url_for('signin'))
       
+@app.route("/register",methods=['GET','POST'])
+def register():
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    confirmationid = str(uuid.uuid4()).replace('-','')
+
+    if request.method == 'GET':
+        return render_template('register.html',symbols=symbols)  
+    if request.form['password'] != request.form['passwordconfirm']:
+        flash("Passwords don't match")
+        return redirect(url_for('register'))
+    if userdb.createUser(DATABASE_URL,request.form['email'],request.form['password'],confirmationid):
+        emailing.sendWelcomeEmail(request.form['email'],confirmationid)
+        return redirect(url_for('signin'))
+    else:
+        flash("User email already registered.")
+        return redirect(url_for('register'))
+
+@app.route("/confirm/<string:confirmationid>",methods=['GET'])
+def confirm(confirmationid):
+    isValid, email = userdb.confirmUser(DATABASE_URL,confirmationid)
+    if isValid:
+        flash('Account confirmed. Please signin.')
+        return redirect(url_for('signin'))      
+    else:
+        return redirect(url_for('get_index'))  
+
 @app.route('/protected')
 @flask_login.login_required
 def protected():

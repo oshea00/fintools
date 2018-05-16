@@ -10,7 +10,10 @@ create extension pgcrypto;
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL
+  accountstatus varchar(10),
+  confirmationid varchar(40),
+  password TEXT NOT NULL,
+  created timestamp default now()
 );
 create unique index usersix on users (email);
 

@@ -40,8 +40,16 @@
            </div>
         </span>
        {% else %}
-       <a class="nav-item navbar-text" href="{{ url_for('signin') }}">Login</a>
-       {% endif %}
+       <span class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Account
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="{{ url_for('signin') }}">Sign In</a>
+            <a class="dropdown-item" href="{{ url_for('register') }}">Register</a>
+        </div>
+     </span>
+    {% endif %}
     </span>
 </div>
   </nav>
