@@ -83,7 +83,8 @@ def signin():
     if request.method == 'GET':
         return render_template('signin.html',symbols=symbols)  
     email = request.form['email']
-    if not userdb.userConfirmed(DATABASE_URL,email):
+    userExists = userdb.userExists(DATABASE_URL,email)
+    if userExists and userdb.userConfirmed(DATABASE_URL,email) == False:
         flash('Account unconfirmed. Please check your email for confirmation link.')
         return redirect(url_for('signin'))       
     if userdb.authenticateUser(DATABASE_URL,email,request.form['password']):
@@ -91,7 +92,6 @@ def signin():
         user.id = email
         flask_login.login_user(user)
         return redirect(url_for('get_index'))
-
     flash('Bad login')
     return redirect(url_for('signin'))
       
