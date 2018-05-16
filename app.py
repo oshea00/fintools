@@ -29,6 +29,7 @@ def user_loader(email):
     user.id = email
     return user
 
+# need to check docs for what this is for...
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
