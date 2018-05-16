@@ -79,7 +79,7 @@ def signin():
     return redirect(url_for('signin'))
       
 @app.route('/protected')
-@flask_login.login_required
+#@flask_login.login_required
 def protected():
     return 'Logged in as: ' + flask_login.current_user.id
 
