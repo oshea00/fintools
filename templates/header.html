@@ -4,7 +4,7 @@
     </a>
     <span>Future Trends Consulting - Examples</span>
 </div>
-<nav class="navbar navbar-expand-md navbar-light bg-light">
+<nav class="navbar navbar-expand navbar-light bg-light">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>  
@@ -32,7 +32,7 @@
        </ul>
        {% if current_user.is_authenticated %}
        <span class="nav-item dropdown">
-           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+           <a class="nav-link dropdown-toggle" style="color: #918f8f" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                {{current_user.id}}
            </a>
            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -41,7 +41,7 @@
         </span>
        {% else %}
        <span class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" style="color: #918f8f" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Account
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">

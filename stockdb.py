@@ -83,8 +83,8 @@ def frontierPlot(vol_arr,ret_arr,sharpe_arr,height,width,max_sr_vol,max_sr_ret,o
         hovermode = 'closest',
         height = height,
         width = width,
-        yaxis = dict(title = 'Return'),
-        xaxis = dict(title = 'Risk'),
+        yaxis = dict(title = 'Return', fixedrange = True),
+        xaxis = dict(title = 'Risk', fixedrange = True),
         title = 'Efficient Frontier',
         plot_bgcolor = '#E2E3E5',
         shapes = [
@@ -150,8 +150,8 @@ def getPlot(symbol,name,df,output_type='div'):
         hovermode = 'closest',
         showlegend = False,
         title = str.format('{} Price',name),
-        yaxis = dict(title = 'Adj Close Price'),
-        xaxis = dict(title = 'Date'),
+        yaxis = dict(title = 'Adj Close Price', fixedrange = True),
+        xaxis = dict(title = 'Date', fixedrange = True),
         plot_bgcolor = '#E2E3E5',
         updatemenus=updatemenus
     )
@@ -189,8 +189,8 @@ def plotTraces(traces,title,xaxis_label,yaxis_label,width,output_type='div'):
         showlegend = True,
         width = width,
         title = title,
-        yaxis = dict(title = yaxis_label),
-        xaxis = dict(title = xaxis_label),
+        yaxis = dict(title = yaxis_label, fixedrange=True),
+        xaxis = dict(title = xaxis_label, fixedrange=True),
         plot_bgcolor = '#E2E3E5'
     )
     data = traces
