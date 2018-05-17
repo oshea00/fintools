@@ -1,6 +1,9 @@
 @media print
 {
     * {-webkit-print-color-adjust:exact;}
+    .container {
+        margin-left: .75in;
+    }
 }
 @media (min-width: 1200px) {
     .container{

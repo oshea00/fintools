@@ -183,10 +183,11 @@ def createTraces(df):
         ))
     return traces
 
-def plotTraces(traces,title,xaxis_label,yaxis_label,output_type='div'):
+def plotTraces(traces,title,xaxis_label,yaxis_label,width,output_type='div'):
     layout = dict(
         hovermode = 'closest',
         showlegend = True,
+        width = width,
         title = title,
         yaxis = dict(title = yaxis_label),
         xaxis = dict(title = xaxis_label),

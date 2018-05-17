@@ -210,7 +210,7 @@ def plot_portfolio():
     if len(tickers) > 0:
         df = stockdb.getPortfolioPrices(tickers,DATABASE_URL)
         traces = stockdb.createTraces(df/df.iloc[0])
-        div = stockdb.plotTraces(traces,'Returns','Date','Return')
+        div = stockdb.plotTraces(traces,'Returns','Date','Return',800)
         vol_arr, ret_arr, sharpe_arr, max_sr_vol, max_sr_ret = stockdb.monteCarloPortfolios(df,1000)
         divfr = stockdb.frontierPlot(vol_arr,ret_arr,sharpe_arr,500,800,max_sr_vol,max_sr_ret)
         allocations = stockdb.getOptimalAllocation(df)
