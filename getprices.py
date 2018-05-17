@@ -10,7 +10,9 @@ q = Queue(connection=conn)
 
 q.enqueue(update_prices,'GOOG','Google',dburl)
 time.sleep(30)
-q.enqueue(update_prices,'AAPL','Apple',dburl)
+q.enqueue(update_prices,'PG','Proctor & Gamble',dburl)
+time.sleep(30)
+q.enqueue(update_prices,'GE','General Electric',dburl)
 time.sleep(30)
 q.enqueue(update_prices,'CSCO','Cisco',dburl)
 time.sleep(30)
@@ -19,5 +21,7 @@ time.sleep(30)
 q.enqueue(update_prices,'CAT','Caterpillar',dburl)
 time.sleep(30)
 q.enqueue(update_prices,'FB','Facebook',dburl)
+time.sleep(30)
+q.enqueue(update_prices,'AAPL','Apple',dburl)
 
 
