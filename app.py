@@ -146,6 +146,7 @@ def register():
         return redirect(url_for('register'))
     if userdb.createUser(DATABASE_URL,request.form['email'],request.form['password'],confirmationid):
         emailing.sendWelcomeEmail(request.form['email'],confirmationid)
+        flash("Email confirmation on its way!")
         return redirect(url_for('signin'))
     else:
         flash("User email already registered.")
