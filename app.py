@@ -112,7 +112,6 @@ def reset_request(resetid):
 
     userRequestReset, email = userdb.getResetRequest(DATABASE_URL,resetid)
     if userRequestReset:
-
         return render_template('changepass.html',resetid=resetid,email=email,symbols=symbols)
     else:
         return redirect(url_for('get_index'))
@@ -126,9 +125,6 @@ def change_password():
     
     confirmationid = str(uuid.uuid4()).replace('-','')
     userExists = userdb.userExists(DATABASE_URL,request.form['email'])
-    app.logger.warn(str.format("new password: {}",request.form['password']))
-    app.logger.warn(str.format("confirmationid: {}",confirmationid))
-    app.logger.warn(str.format("resetid: {}",request.form['resetid']))
     if userExists and userdb.resetUser(DATABASE_URL, request.form['password'],confirmationid,request.form['resetid']):
         emailing.sendWelcomeEmail(request.form['email'],confirmationid)
         flash('Email confirmation sent.')
