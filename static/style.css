@@ -32,32 +32,26 @@
     vertical-align: middle;
 }
 
-@media (min-width: 756px) {
-    .header {
-        font-size: 12px;
-    }
-}
-
-
 body {
     font-family: 'Cousine', 'Georgia', serif;
     font-weight: normal;
     color: #222;
     font-size: 18px;
 }
+
 h1 {
-  font-family: 'Cousine', 'Georgia', serif;
-  font-weight: normal;
-  color: #222;
-  font-size: 22px;
-  padding: 10px 0px 10px 0px;
-  margin: 0;
+    font-family: 'Cousine', 'Georgia', serif;
+    font-weight: normal;
+    color: #222;
+    font-size: 22px;
+    padding: 10px 0px 10px 0px;
+    margin: 0;
 }
 a:link {
-  color: #142031;
-  text-decoration: none;
-  font-family: 'Cousine', 'Georgia', serif;
-  font-size: 18px;
+    color: #142031;
+    text-decoration: none;
+    font-family: 'Cousine', 'Georgia', serif;
+    font-size: 18px;
 }
 a:visited {
     color: #142031;
@@ -65,6 +59,45 @@ a:visited {
 a:hover {
     color: #040511;
 }
+   
+@media (min-width: 90px) and (max-width: 712px) {
+    .header {
+        font-size: 14px;
+    }
+    .header a {
+        vertical-align: middle;
+        padding-right: 5px;
+    }
+    .header img {
+        height: 48px;
+        width: 48px;
+        vertical-align: middle;
+    }
+    body {
+        font-family: 'Cousine', 'Georgia', serif;
+        font-weight: normal;
+        color: #222;
+        font-size: 14px;
+    }
+    h1 {
+        font-family: 'Cousine', 'Georgia', serif;
+        font-weight: normal;
+        color: #222;
+        font-size: 16px;
+        padding: 10px 0px 10px 0px;
+        margin: 0;
+      }      
+    h4 {
+        font-size: 16px;
+    }      
+    a:link {
+        color: #142031;
+        text-decoration: none;
+        font-family: 'Cousine', 'Georgia', serif;
+        font-size: 16px;
+    }
+}
+
 ul {
     list-style-type: none;
     margin: 0px;
