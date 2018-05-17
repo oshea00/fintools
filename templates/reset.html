@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="content">
+<h1>Request Password Reset</h1>
+<form action="{{ url_for('reset') }}" method="POST">
+    <div class="form-group row">
+        <label for="exampleInputEmail1" class="col-sm-1 col-form-label">Email</label>
+        <div class="col-sm-4">
+            <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+        </div>
+    </div>
+    <button type="submit" name="submit" class="btn btn-primary">Send Request</button>
+</form>
+</div>
+{% endblock %}

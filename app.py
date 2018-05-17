@@ -46,8 +46,6 @@ def request_loader(request):
         return
     user = userdb.User()
     user.id = email
-    # DO NOT ever store passwords in plaintext and always compare password
-    # hashes using constant-time comparison!
     user.is_authenticated = userdb.authenticateUser(DATABASE_URL,email,request.form['password'])
     return user
 
@@ -83,8 +81,8 @@ def signin():
     if request.method == 'GET':
         return render_template('signin.html',symbols=symbols)  
     email = request.form['email']
-    userExists = userdb.userExists(DATABASE_URL,email)
-    if userExists and userdb.userConfirmed(DATABASE_URL,email) == False:
+    userConfirmed, confirmationid, _ = userdb.userConfirmed(DATABASE_URL,email)
+    if not userConfirmed:
         flash('Account unconfirmed. Please check your email for confirmation link.')
         return redirect(url_for('signin'))       
     if userdb.authenticateUser(DATABASE_URL,email,request.form['password']):
@@ -95,6 +93,47 @@ def signin():
     flash('Bad login')
     return redirect(url_for('signin'))
       
+@app.route("/resetlogin",methods=['GET','POST'])
+def reset():
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    if request.method == 'GET':
+        return render_template('reset.html',symbols=symbols)  
+    userConfirmed, confirmationid, id = userdb.userConfirmed(DATABASE_URL,request.form['email'])
+    if userConfirmed:
+        resetid = str(uuid.uuid4()).replace('-','')
+        userdb.setUserAccountToReset(DATABASE_URL,id,resetid)
+        emailing.sendResetEmail(request.form['email'],resetid)
+    flash('Reset email on its way!')
+    return redirect(url_for('reset'))
+
+@app.route("/resetrequest/<string:resetid>",methods=['GET'])
+def reset_request(resetid):
+    symbols = stockdb.getSymbols(DATABASE_URL)
+
+    userRequestReset, email = userdb.getResetRequest(DATABASE_URL,resetid)
+    if userRequestReset:
+
+        return render_template('changepass.html',resetid=resetid,email=email,symbols=symbols)
+    else:
+        return redirect(url_for('get_index'))
+
+@app.route("/changepass",methods=['GET','POST'])
+def change_password():
+    
+    if request.form['password'] != request.form['passwordconfirm']:
+        flash('Passwords must match')
+        return redirect(url_for('reset_request',resetid=request.form['resetid']))
+    
+    confirmationid = str(uuid.uuid4()).replace('-','')
+    userExists = userdb.userExists(DATABASE_URL,request.form['email'])
+    app.logger.warn(str.format("new password: {}",request.form['password']))
+    app.logger.warn(str.format("confirmationid: {}",confirmationid))
+    app.logger.warn(str.format("resetid: {}",request.form['resetid']))
+    if userExists and userdb.resetUser(DATABASE_URL, request.form['password'],confirmationid,request.form['resetid']):
+        emailing.sendWelcomeEmail(request.form['email'],confirmationid)
+        flash('Email confirmation sent.')
+        return redirect(url_for('signin'))
+
 @app.route("/register",methods=['GET','POST'])
 def register():
     symbols = stockdb.getSymbols(DATABASE_URL)
@@ -117,9 +156,9 @@ def confirm(confirmationid):
     isValid, email = userdb.confirmUser(DATABASE_URL,confirmationid)
     if isValid:
         flash('Account confirmed. Please signin.')
-        return redirect(url_for('signin'))      
+        return redirect(url_for('signin'))
     else:
-        return redirect(url_for('get_index'))  
+        return redirect(url_for('get_index'))
 
 @app.route('/protected')
 @flask_login.login_required

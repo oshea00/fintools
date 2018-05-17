@@ -12,6 +12,7 @@ CREATE TABLE users (
   email TEXT NOT NULL UNIQUE,
   accountstatus varchar(10),
   confirmationid varchar(40),
+  resetid varchar(40),
   password TEXT NOT NULL,
   created timestamp default now()
 );
