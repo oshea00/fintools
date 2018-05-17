@@ -5,6 +5,7 @@
         margin-left: .75in;
     }
 }
+
 @media (min-width: 1200px) {
     .container{
         max-width: 1200px;
@@ -30,6 +31,14 @@
     width: 72px;
     vertical-align: middle;
 }
+
+@media (min-width: 756px) {
+    .header {
+        font-size: 12px;
+    }
+}
+
+
 body {
     font-family: 'Cousine', 'Georgia', serif;
     font-weight: normal;
