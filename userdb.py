@@ -53,7 +53,7 @@ def getResetRequest(dburl,resetid):
         validUser = (False, "")
         conn = pg.connect(dburl)
         cur = conn.cursor()
-        cur.execute("select email from users where resetid = %s",(resetid,))
+        cur.execute("select email from users where resetid = %s and accountstatus = 'requested'",(resetid,))
         rows = cur.fetchall()
         if (cur.rowcount > 0):
             email = rows[0][0]
