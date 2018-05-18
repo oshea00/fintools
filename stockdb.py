@@ -286,6 +286,11 @@ def getOptimalAllocation(stocks):
 
 def plotScatter(df, height, width):
     fig = ff.create_scatterplotmatrix(df.pct_change(1), diag='histogram', height=height, width=width)
+    # customize xaxisn and yaxisn  
+    for k in fig['layout']:
+        if k.startswith('xaxis') or k.startswith('yaxis'):
+            fig['layout'][k].update(fixedrange=True)
+            #logger.warn(fig['layout'][k])
     div = plot(fig, output_type='div',config=dict(displayModeBar=True,showLink=False))
     return div
 
