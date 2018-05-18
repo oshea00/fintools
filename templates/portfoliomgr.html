@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+<div id="greeting"></div>
+<div>
+Here are some symbols:
+</div>
+<div id="symbollist"></div>
+{% endblock %}
+{% block apps %}
+<script>
+const e = React.createElement;
+const symbolsapi = `{{ url_for('symbols') }}`
+
+ReactDOM.render(e('h2',null,"Greetings Mike"),document.getElementById('greeting'))    
+ReactDOM.render([
+        e(fintools.SymbolList,{url:symbolsapi}),
+    ],document.getElementById('symbollist'))
+
+</script>
+    
+{% endblock %}
+

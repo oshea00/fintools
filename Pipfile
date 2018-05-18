@@ -21,6 +21,7 @@ scikit-learn = "*"
 scipy = "*"
 flask-login = "*"
 sendgrid = "*"
+flask-cors = "*"
 
 [dev-packages]
 

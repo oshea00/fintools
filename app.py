@@ -11,12 +11,15 @@ import quandl
 import stockdb
 import userdb
 import emailing
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = "\x8e\xea\x1f\xf8\x10I\x16\xbf\x85|\x8bQ>a\xaam\xff:+\x1d\xf8,(\xdf)ku\xa0\xe9x\xb9@"
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
+
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.before_request
 def before_request():
@@ -167,6 +170,10 @@ def signout():
     flask_login.logout_user()
     return redirect(url_for('get_index'))    
 
+@app.route('/api/v1/symbols')
+def symbols():
+    return json.dumps(stockdb.getSymbols(DATABASE_URL))
+
 @app.route("/corr",methods=['GET'])
 def get_correlation():
     symbols = stockdb.getSymbols(DATABASE_URL)
@@ -243,6 +250,11 @@ def stock_chart(ticker):
             title=title,
             chart=str.format('No Data For Ticker {}',symbol),
             annotiation='Source: Yahoo Finance')
+
+@app.route("/portfoliomgr",methods=['GET','POST'])
+@flask_login.login_required
+def portfoliomgr():
+    return render_template('portfoliomgr.html')
 
 app.logger.info("Started!")
 
