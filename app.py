@@ -170,10 +170,6 @@ def signout():
     flask_login.logout_user()
     return redirect(url_for('get_index'))    
 
-@app.route('/api/v1/symbols')
-def symbols():
-    return json.dumps(stockdb.getSymbols(DATABASE_URL))
-
 @app.route("/corr",methods=['GET'])
 def get_correlation():
     symbols = stockdb.getSymbols(DATABASE_URL)
@@ -250,6 +246,10 @@ def stock_chart(ticker):
             title=title,
             chart=str.format('No Data For Ticker {}',symbol),
             annotiation='Source: Yahoo Finance')
+
+@app.route('/api/v1/symbols')
+def symbols():
+    return json.dumps(stockdb.getSymbols(DATABASE_URL))
 
 @app.route("/portfoliomgr",methods=['GET','POST'])
 @flask_login.login_required
