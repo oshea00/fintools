@@ -6,37 +6,17 @@
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
   </head>
   <body>
     <div id="root"></div>
     <script type="text/babel">
+      const e = React.createElement;
       function App()
       {
         return (
-          <div>
           <Clock />
-          <Clock />
-          <Clock />
-          <ActionLink/>
-          </div>
         );
-      }
-      class ActionLink extends React.Component {
-        constructor(props) {
-          super(props);
-          this.handleClick = this.handleClick.bind(this);
-        }
-
-        handleClick(id2,id1,e) {
-          e.preventDefault();
-          console.log('The link was clicked. id1='+id1+' id2='+id2);
-        }     
-
-        render() {
-          return (
-            <a href="#" onClick={this.handleClick.bind(this,2,1)}>Click me</a>
-          );
-        } 
       }
 
       function FormattedDate(props) {
@@ -52,7 +32,6 @@
         render() {
           return (
             <div>
-              <h1>Hello, world!</h1>
               <FormattedDate date={this.state.date}/>
             </div>
           );
@@ -74,8 +53,13 @@
         }
       }
 
+
       ReactDOM.render(
-        <App/>,
+        <div>
+          { e('h1',null,'Clock') }
+          <App/>
+        </div>
+        ,
         document.getElementById('root')
       );
     </script>

@@ -254,7 +254,8 @@ def symbols():
 @app.route("/portfoliomgr",methods=['GET','POST'])
 @flask_login.login_required
 def portfoliomgr():
-    return render_template('portfoliomgr.html')
+    symbols = stockdb.getSymbols(DATABASE_URL)
+    return render_template('portfoliomgr.html',symbols=symbols)
 
 app.logger.info("Started!")
 
