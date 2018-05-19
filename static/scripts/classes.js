@@ -1,7 +1,7 @@
 var fintools = (function() {
     'use strict';
 
-    class SymbolLookup extends React.Component {
+    class PriceLookup extends React.Component {
         constructor(props) {
             super(props);
             this.state = { symbol: '', price: '0.00', hasprice: false, tickerfound: true};
@@ -32,7 +32,7 @@ var fintools = (function() {
 
         render() {
             return e('form',null,
-                e('label',null,'Name:',
+                e('label',null,'Stock:',
                     e('input', { 
                         type:'text', placeholder: 'Ticker', name: 'symbol', 
                         value: this.state.symbol, 
@@ -43,7 +43,7 @@ var fintools = (function() {
                     type: 'button', className:'btn btn-primary',
                     onClick: this.handleClick.bind(this)
                 },'Lookup'),
-                e(Symbol, {
+                e(Price, {
                     symbol: this.state.symbol, 
                     hasprice: this.state.hasprice, 
                     tickerfound: this.state.tickerfound, 
@@ -53,7 +53,7 @@ var fintools = (function() {
         }
     }
 
-    function Symbol(props) {
+    function Price(props) {
         if (!props.tickerfound) {
             return (
                 e('div',null,
@@ -100,7 +100,7 @@ var fintools = (function() {
     return {
         SymbolList: SymbolList,
         Symbol: Symbol,
-        SymbolLookup: SymbolLookup
+        PriceLookup: PriceLookup
     };
 
 }());

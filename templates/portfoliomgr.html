@@ -3,15 +3,15 @@
 <div>
 Price Lookup:
 </div>
-<div id="symbollookup"></div>
+<div id="pricelookup"></div>
 {% endblock %}
 {% block apps %}
 <script>
 const e = React.createElement;
 const symbolsapi = `{{ url_for('symbols') }}`
 
-ReactDOM.render(e(fintools.SymbolLookup),
-    document.getElementById('symbollookup'))   
+ReactDOM.render(e(fintools.PriceLookup),
+    document.getElementById('pricelookup'))   
 
 </script>
     
