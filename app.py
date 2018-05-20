@@ -266,6 +266,27 @@ def portfoliomgr():
     symbols = stockdb.getSymbols(DATABASE_URL)
     return render_template('portfoliomgr.html',symbols=symbols)
 
+@app.route('/api/v1/saveportfolio',methods=['PUT'])
+@flask_login.login_required
+def save_portfolio():
+    p = ""
+    if len(request.data) > 50000:
+        return "bad file", 405
+    try:
+        stockdb.savePortfolio(DATABASE_URL,flask_login.current_user.id,request.json)
+    except Exception as ex:
+        app.logger.error(ex)
+    return "OK"
+        
+@app.route('/api/v1/portfolio',methods=['GET'])
+@flask_login.login_required
+def load_portfolio():
+    dfjson = stockdb.loadPortfolio(DATABASE_URL,flask_login.current_user.id)
+    if dfjson:
+        return dfjson
+    else:
+        return "Error", 404
+
 app.logger.info("Started!")
 
 if __name__ == "__main__":

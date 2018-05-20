@@ -278,14 +278,24 @@ var fintools = (function() {
                 });
         }
 
+        componentDidMount() {
+            axios.get(this.props.urlLoad)
+                .then((res)=>{
+                    this.setState({ assets: res.data });
+                })
+        }
+
         saveAssets() {
-            alert('Save Assets - coming soon!');
+            axios.put(this.props.urlSave,this.state.assets)
+             .catch((error)=>{
+                 console.log(error);
+             });
         }
 
         removeAsset(ticker) {
             // updates asset array - at some point we'll update db on another user control input
             this.setState((prevState,props)=> ({
-                assets: prevState.assets.filter((a)=>{ return a[4] != ticker })
+                assets: prevState.assets.filter((a)=>{ return a.ticker != ticker })
             }));
         }
 

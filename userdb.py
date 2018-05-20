@@ -104,6 +104,7 @@ def createUser(dburl,email,password,confirmationid):
         cur = conn.cursor()
         cur.execute("INSERT INTO users (email, password, accountstatus, confirmationid) VALUES (%s,crypt(%s, gen_salt('bf')),%s,%s)",
             (email,password,'requested',confirmationid))
+        cur.execute("INSERT INTO user_portfolios (email) values (%s)",(email,))
         conn.commit()
         validUser = True
     except:

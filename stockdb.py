@@ -33,6 +33,35 @@ def saveData(symbol,name,jsstr,dburl):
     cur.close()
     conn.close()
 
+def savePortfolio(dburl,email,portfolio):
+    df = pd.DataFrame(portfolio)
+    conn = pg.connect(dburl)
+    cur = conn.cursor()
+    cur.execute('update user_portfolios set portfolio = %s where email = %s',(df.to_csv(index=False),email))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def loadPortfolio(dburl,email,logger=None):
+    try:
+        dfjson = {}
+        conn = pg.connect(dburl)
+        cur = conn.cursor()
+        cur.execute('select portfolio from user_portfolios where email = %s',(email,))
+        rows = cur.fetchone()
+        cur.close()
+        conn.close()  
+        with StringIO(rows[0]) as csv:
+            df = pd.read_csv(csv)
+        dfjson = df.to_json(orient='records')
+    except Exception as ex:
+        if logger:
+            logger.error(ex)
+        return None
+    else:
+        return dfjson
+    
+
 def getSymbolData(symbol,dburl):
     try:
         conn = pg.connect(dburl)
