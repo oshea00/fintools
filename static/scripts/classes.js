@@ -141,7 +141,7 @@ var fintools = (function() {
         }
 
         handleClick(event) {
-            alert('Remove '+event.target.value);
+            this.props.removeAsset(event.target.value);
         }
 
         render() {
@@ -230,13 +230,27 @@ var fintools = (function() {
             super(props);
             this.state = { assets: []}
             this.addAsset = this.addAsset.bind(this);
+            this.removeAsset = this.removeAsset.bind(this);
         }
 
         addAsset (ticker) {
-            // lookup info and add it
-            const newAsset = [[ticker,'Equity','Defensive Industrials','20.0%',ticker]];
+            // lookup info about ticker and add it - this.props.url
+            axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/company`)
+                .then(r => {
+                    var newasset = [[r.data.companyName,r.data.issueType,r.data.sector,'0.0%',ticker]]
+                    this.setState((prevState,props)=> ({
+                        assets: prevState.assets.concat(newasset)
+                    }));
+                })
+                .catch(error=>{
+
+                });
+        }
+
+        removeAsset(ticker) {
+            // updates asset array - at some point we'll update db on another user control input
             this.setState((prevState,props)=> ({
-                assets: prevState.assets.concat(newAsset)
+                assets: prevState.assets.filter((a)=>{ return a[4] != ticker })
             }));
         }
 
@@ -244,7 +258,7 @@ var fintools = (function() {
             return (
                 e('div',{className:'portfolio'},
                 e(StockPicker,{url:this.props.url, addAsset: this.addAsset.bind(this)}),
-                e(PortfolioView,{assets: this.state.assets})
+                e(PortfolioView,{assets: this.state.assets, removeAsset: this.removeAsset.bind(this)})
                 )
             );
         }
