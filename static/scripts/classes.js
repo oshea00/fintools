@@ -67,36 +67,6 @@ var fintools = (function() {
                 e('span',null,`${props.symbol} : ${props.price}`)));
     }
 
-    class SymbolList extends React.Component {
-        constructor(props) {
-            super(props);
-            this.url = props.url;
-            this.state = {
-                symbols: []
-            };
-        }    
-    
-        componentDidMount() {
-            axios.get(this.url)
-                .then(res => {
-                    const symbols = res.data;
-                    this.setState({ 'symbols' : symbols });
-            });
-        }
-    
-        render() {
-            return (
-                e('ul',null,
-                    this.state.symbols.map(
-                        (s) => {
-                            return e('li',null,`${s[0]} - ${s[1]}`)
-                        }
-                    )
-                )
-            );
-        }
-    }
-
     class AssetList extends React.Component {
         constructor(props) {
             super(props);
@@ -104,7 +74,13 @@ var fintools = (function() {
         }
 
         handleClick(event) {
-            this.props.addAsset(event.target.value);
+            const ticker = event.target.value;
+            axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/price`)
+            .then(res => {
+                this.props.addAsset({value: ticker, price: res.data});
+            })
+            .catch(error=> {
+            });                        
         }
 
         render() {
@@ -155,8 +131,9 @@ var fintools = (function() {
                         e('th',null,'Company'),
                         e('th',null,'Type'),
                         e('th',null,'Sector'),
+                        e('th',null,'Price'),
                         e('th',null,'Weight'),
-                        e('th',null,'')
+                        e('th',null,'Action')
                     )),
                     e('tbody',null,
                     assets.map(
@@ -166,6 +143,7 @@ var fintools = (function() {
                                 e('td',null,asset[0]),
                                 e('td',null,asset[1]),
                                 e('td',null,asset[2]),
+                                e('td',null,asset[5]),
                                 e('td',null,asset[3]),
                                 e('td',null,e('button',{type:'button', value: asset[4], className:'btn btn-link',
                                    onClick: this.handleClick.bind(this)}, 'Remove'))
@@ -208,15 +186,15 @@ var fintools = (function() {
             return (
                 e('div',null,
                 e('h4',null,'Stock Picker'),
-                e('fieldset',null,
-                    e('label',null,'Stock:',
-                        e('input',{type:'text', className: 'form-control', placeholder:'Name or Ticker',
-                            value: this.state.search, 
-                            onChange: this.handleChange.bind(this),
-                            onFocus: this.handleOnFocus.bind(this)
-                        })),
-                e('button',{type: 'button', className: "btn btn-primary", 
-                    onClick: this.handleClick.bind(this)},'Lookup')),
+                e('form',{className:'form-inline'},
+                    e('input',{type:'text', className: 'form-control', placeholder:'Name or Ticker',
+                        value: this.state.search, 
+                        onChange: this.handleChange.bind(this),
+                        onFocus: this.handleOnFocus.bind(this)
+                    }),
+                    e('button',{type: 'button', className: "btn btn-primary", 
+                        onClick: this.handleClick.bind(this)},'Lookup')
+                ),
                 (this.state.symbols.length > 10) ? 
                     e('span',null,'Limited to 20 results. You may want to narrow search.') : null,
                 (this.state.symbols.length > 0) ? 
@@ -233,11 +211,11 @@ var fintools = (function() {
             this.removeAsset = this.removeAsset.bind(this);
         }
 
-        addAsset (ticker) {
+        addAsset (event) {
             // lookup info about ticker and add it - this.props.url
-            axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/company`)
+            axios.get(`https://api.iextrading.com/1.0/stock/${event.value}/company`)
                 .then(r => {
-                    var newasset = [[r.data.companyName,r.data.issueType,r.data.sector,'0.0%',ticker]]
+                    var newasset = [[r.data.companyName,r.data.issueType,r.data.sector,'0.0%',event.value,event.price]]
                     this.setState((prevState,props)=> ({
                         assets: prevState.assets.concat(newasset)
                     }));
@@ -265,7 +243,6 @@ var fintools = (function() {
     }
              
     return {
-        SymbolList: SymbolList,
         Symbol: Symbol,
         PriceLookup: PriceLookup,
         PortfolioManager: PortfolioManager

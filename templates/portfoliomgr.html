@@ -1,21 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
-<div>
-<h4>Price Lookup</h4>
-</div>
-<div id="pricelookup"></div>
 <div id="portfoliomgr"></div>
 {% endblock %}
 {% block apps %}
 <script>
-const e = React.createElement;
-const symbolsapi = `{{ url_for('symbols') }}`
-
-ReactDOM.render(e(fintools.PriceLookup),
-    document.getElementById('pricelookup'))   
+    const e = React.createElement;
+    const symbolsapi = `{{ url_for('symbols') }}`;
     ReactDOM.render(e(fintools.PortfolioManager,{url:`{{ url_for('symbol_lookup') }}`}),
-    document.getElementById('portfoliomgr'))   
-
+    document.getElementById('portfoliomgr'));
 </script>
     
 {% endblock %}

@@ -33,3 +33,7 @@ CREATE TABLE symbols (
   name text,
   symbol text not null unique
 );
+create index symnameix on symbols(name);
+
+select * from symbols where lower(name) like '%apple%' or lower(symbol) like '%apple%';
+

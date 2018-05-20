@@ -193,6 +193,9 @@ ul {
 .portfolioTable {
     width: 800px;
 }
+.portfolioTable td, th{
+    padding: 5px;
+}
 
 .portfolio h4 {
     margin-top: 20px;
