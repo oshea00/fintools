@@ -205,4 +205,21 @@ ul {
     margin-top: 10px;
 }
 
+.assetDescription {
+    font-size: 10pt;
+}
+
+a.assetUrl:link {
+    color: #2a53da;
+    text-decoration: none;
+    font-family: 'Cousine', 'Georgia', serif;
+    font-size: 18px;
+}
+a.assetUrl:visited {
+    color: #2a53da;
+}
+a.assetUrl:hover {
+    color: #2a53da;
+}
+
 

@@ -152,7 +152,7 @@ var fintools = (function() {
                                         'data-target':'#companyinfo'+asset.ticker},asset.companyName)),
                                 e('td',null,asset.issueType),
                                 e('td',null,asset.sector),
-                                e('td',null,asset.price),
+                                e('td',null,asset.lastPrice),
                                 e('td',null,asset.weight),
                                 e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link',
                                    onClick: this.handleClick.bind(this)}, 'Remove'))
@@ -172,8 +172,14 @@ var fintools = (function() {
                                         e('h5',{className:'modal-title'},asset.companyName),
                                         e('button',{type:'button',className:'close','data-dismiss':'modal'},'\u00d7')),
                                     e('div',{className:'modal-body'},
-                                        e('span',null,asset.companyName+' Information.'),
-                                        e('div',null,asset.description)
+                                        e('div',{className:'assetCEO'},'CEO: '+asset.ceo),
+                                        e('div',null,'Exchange: '+asset.exchange),
+                                        e('div',null,'Industry: '+asset.industry),
+                                        e('div',null,
+                                            e('span',null,'Homepage: ',e('a',{className:'assetUrl',target:'_blank',href:asset.website},asset.website))
+                                        ),
+                                        e('div',{className:'assetDescription'},asset.description),
+
                                     ),
                                     e('div',{className:'modal-footer'},
                                         e('button',{className:'btn btn-secondary','data-dismiss':'modal'},'Close')
