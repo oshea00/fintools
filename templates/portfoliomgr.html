@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
 <div>
-Price Lookup:
+<h4>Price Lookup</h4>
 </div>
 <div id="pricelookup"></div>
+<div id="portfoliomgr"></div>
 {% endblock %}
 {% block apps %}
 <script>
@@ -12,6 +13,8 @@ const symbolsapi = `{{ url_for('symbols') }}`
 
 ReactDOM.render(e(fintools.PriceLookup),
     document.getElementById('pricelookup'))   
+    ReactDOM.render(e(fintools.PortfolioManager,{url:`{{ url_for('symbol_lookup') }}`}),
+    document.getElementById('portfoliomgr'))   
 
 </script>
     

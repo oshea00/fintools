@@ -29,3 +29,7 @@ SELECT id
 
 update users set password = crypt('newsecret',gen_salt('bf')) where email = 'oshea00@gmail.com';
 
+CREATE TABLE symbols (
+  name text,
+  symbol text not null unique
+);

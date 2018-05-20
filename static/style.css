@@ -186,5 +186,16 @@ ul {
     width: 250px; 
 }
 
+.assetList {
+    width: 800px;
+}
+
+.portfolioTable {
+    width: 800px;
+}
+
+.portfolio h4 {
+    margin-top: 20px;
+}
 
 

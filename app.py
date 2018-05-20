@@ -247,9 +247,18 @@ def stock_chart(ticker):
             chart=str.format('No Data For Ticker {}',symbol),
             annotiation='Source: Yahoo Finance')
 
-@app.route('/api/v1/symbols')
+@app.route('/api/v1/symbols',methods=['GET'])
 def symbols():
     return json.dumps(stockdb.getSymbols(DATABASE_URL))
+
+@app.route('/api/v1/symbollookup',methods=['GET'])
+def symbol_lookup():
+    search = request.args.get('search')
+    r = stockdb.symbolLookup(DATABASE_URL,search)
+    if r:
+        return json.dumps(r)
+    else:
+        return json.dumps([])
 
 @app.route("/portfoliomgr",methods=['GET','POST'])
 @flask_login.login_required

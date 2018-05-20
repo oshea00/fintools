@@ -8,6 +8,7 @@ from plotly.offline import plot, iplot
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
 from scipy.optimize import minimize
+from io import StringIO
 import numpy as np
 
 def getLast30days(symbol,src = 'yahoo'):
@@ -59,6 +60,25 @@ def getSymbols(dburl):
         return None
     else:
         return symbols
+
+def symbolLookup(dburl,search):
+    try:
+        rows = []
+        conn = pg.connect(dburl)
+        cur = conn.cursor()
+        pattern = str.format("%{}%",search.lower())
+        if len(search) <= 4:
+            cur.execute('select symbol, name from symbols where lower(symbol) =  %s',
+                (search.lower(),))
+        else:
+            cur.execute('select symbol, name from symbols where lower(name) like %s or lower(symbol) like %s limit 20',
+                (pattern,pattern))
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+        return rows
+    except:
+        return None
 
 def frontierPlot(vol_arr,ret_arr,sharpe_arr,height,width,max_sr_vol,max_sr_ret,output_type='div'):
     trace = go.Scatter(
@@ -294,3 +314,26 @@ def plotScatter(df, height, width):
     div = plot(fig, output_type='div',config=dict(displayModeBar=True,showLink=False))
     return div
 
+def importSymbols(dburl,logger=None):
+    try:
+        symbolsLoaded = False
+        r = requests.get('https://api.iextrading.com/1.0/ref-data/symbols')
+        symboljson = r.json()
+        symboldf = pd.DataFrame(symboljson)
+        symbolcsv = symboldf[symboldf.isEnabled==True][['name','symbol']].to_csv(header=False,index=False)
+        conn = pg.connect(dburl)
+        cur = conn.cursor()
+        symbols = StringIO(symbolcsv)
+        cur.execute('truncate symbols')
+        cur.copy_from(symbols,'symbols',sep=',')
+        symbols.close()
+        conn.commit()
+        conn.close()
+        symbolsLoaded = True
+    except Exception as ex:
+        if logger:
+            logger.warn(ex)
+        else:
+            print(ex)
+    else:
+        return symbolsLoaded
