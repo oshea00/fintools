@@ -67,7 +67,7 @@ var fintools = (function() {
                 e('span',null,`${props.symbol} : ${props.price}`)));
     }
 
-    class AssetList extends React.Component {
+    class StockList extends React.Component {
         constructor(props) {
             super(props);
             this.handleClick = this.handleClick.bind(this);        
@@ -114,10 +114,15 @@ var fintools = (function() {
         constructor(props) {
             super(props);
             this.handleClick = this.handleClick.bind(this);
+            this.handleSave = this.handleSave.bind(this);
         }
 
         handleClick(event) {
             this.props.removeAsset(event.target.value);
+        }
+
+        handleSave(event) {
+            this.props.saveAssets();
         }
 
         render() {
@@ -150,7 +155,10 @@ var fintools = (function() {
                             ));
                         }
                     ))      
-                ))
+                ),
+                e('button',{type:'button', className: 'btn btn-primary savePortfolio',
+                    onClick: this.handleSave.bind(this)
+                    },'Save Portfolio'))
             );
         }
     }
@@ -198,7 +206,7 @@ var fintools = (function() {
                 (this.state.symbols.length > 10) ? 
                     e('span',null,'Limited to 20 results. You may want to narrow search.') : null,
                 (this.state.symbols.length > 0) ? 
-                    e(AssetList,{symbols:this.state.symbols, addAsset: this.props.addAsset }) : null
+                    e(StockList,{symbols:this.state.symbols, addAsset: this.props.addAsset }) : null
             ));
         }
     }
@@ -209,6 +217,7 @@ var fintools = (function() {
             this.state = { assets: []}
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
+            this.saveAssets = this.saveAssets.bind(this);
         }
 
         addAsset (event) {
@@ -225,6 +234,10 @@ var fintools = (function() {
                 });
         }
 
+        saveAssets() {
+            alert('Save Assets - coming soon!');
+        }
+
         removeAsset(ticker) {
             // updates asset array - at some point we'll update db on another user control input
             this.setState((prevState,props)=> ({
@@ -236,7 +249,10 @@ var fintools = (function() {
             return (
                 e('div',{className:'portfolio'},
                 e(StockPicker,{url:this.props.url, addAsset: this.addAsset.bind(this)}),
-                e(PortfolioView,{assets: this.state.assets, removeAsset: this.removeAsset.bind(this)})
+                e(PortfolioView,{assets: this.state.assets, 
+                    removeAsset: this.removeAsset.bind(this),
+                    saveAssets: this.saveAssets.bind(this)
+                })
                 )
             );
         }
