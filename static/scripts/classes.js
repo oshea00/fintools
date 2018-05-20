@@ -145,12 +145,16 @@ var fintools = (function() {
                         (asset) => {
                             return (
                                 e('tr',null,
-                                e('td',null,asset[0]),
-                                e('td',null,asset[1]),
-                                e('td',null,asset[2]),
-                                e('td',null,asset[5]),
-                                e('td',null,asset[3]),
-                                e('td',null,e('button',{type:'button', value: asset[4], className:'btn btn-link',
+                                e('td',null,
+                                    e('button',{type:'button',
+                                        className:'btn btn-link',
+                                        'data-toggle':'modal',
+                                        'data-target':'#companyinfo'+asset.ticker},asset.companyName)),
+                                e('td',null,asset.issueType),
+                                e('td',null,asset.sector),
+                                e('td',null,asset.price),
+                                e('td',null,asset.weight),
+                                e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link',
                                    onClick: this.handleClick.bind(this)}, 'Remove'))
                             ));
                         }
@@ -158,8 +162,28 @@ var fintools = (function() {
                 ),
                 e('button',{type:'button', className: 'btn btn-primary savePortfolio',
                     onClick: this.handleSave.bind(this)
-                    },'Save Portfolio'))
-            );
+                    },'Save Portfolio'),
+                assets.map((asset)=>{
+                    return (
+                        e('div',{className:'modal fade', id:'companyinfo'+asset.ticker,tabindex:-1},
+                            e('div',{className:'modal-dialog'},
+                                e('div',{className:'modal-content'},
+                                    e('div',{className:'modal-header'},
+                                        e('h5',{className:'modal-title'},asset.companyName),
+                                        e('button',{type:'button',className:'close','data-dismiss':'modal'},'\u00d7')),
+                                    e('div',{className:'modal-body'},
+                                        e('span',null,asset.companyName+' Information.'),
+                                        e('div',null,asset.description)
+                                    ),
+                                    e('div',{className:'modal-footer'},
+                                        e('button',{className:'btn btn-secondary','data-dismiss':'modal'},'Close')
+                                    )
+                                )
+                            )
+                        )
+                    );
+                }),
+            ))
         }
     }
 
@@ -224,7 +248,21 @@ var fintools = (function() {
             // lookup info about ticker and add it - this.props.url
             axios.get(`https://api.iextrading.com/1.0/stock/${event.value}/company`)
                 .then(r => {
-                    var newasset = [[r.data.companyName,r.data.issueType,r.data.sector,'0.0%',event.value,event.price]]
+                    var newasset = [
+                        {
+                            companyName: r.data.companyName,
+                            ceo: r.data.CEO,
+                            issueType: r.data.issueType,
+                            sector: r.data.sector,
+                            industry: r.data.industry,
+                            weight: '0.0%',
+                            ticker: event.value,
+                            lastPrice: event.price,
+                            exchange: r.data.exchange,
+                            description: r.data.description,
+                            website: r.data.website
+                        }
+                    ]
                     this.setState((prevState,props)=> ({
                         assets: prevState.assets.concat(newasset)
                     }));
