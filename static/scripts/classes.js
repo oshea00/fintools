@@ -113,20 +113,20 @@ var fintools = (function() {
                 e('table',{className:'assetList table-bordered table-striped'},
                     e('thead',null,
                     e('tr',null,
-                        e('th',null,'Symbol'),
-                        e('th',null,'Company'),
-                        e('th',null,'')
+                        e('th',null,'Action'),
+                        e('th',null,'Ticker'),
+                        e('th',null,'Company')
                     )),
                     e('tbody',null,
                     symbols.map(
                         (s) => {
                             return (
                                 e('tr',null,
-                                    e('td',null,s[0]),
-                                    e('td',null,s[1]),
                                     e('td',null,e('button',{type:'button',className:'btn btn-link',value:s[0],
-                                        onClick: this.handleClick.bind(this)},'Add'))
-                            ));
+                                        onClick: this.handleClick.bind(this)},'Add')),
+                                        e('td',null,s[0]),
+                                        e('td',null,s[1])
+                                ));
                         }
                     ))      
                 )
