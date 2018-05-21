@@ -308,7 +308,7 @@ var fintools = (function() {
                 this.setState({ assets: watchlist });
             }
             if (this.props.reprice) {
-                this.timerID = setInterval(()=>this.reprice(),1000);          
+                this.timerID = setInterval(()=>this.reprice(),2000);          
             }
         }
 
