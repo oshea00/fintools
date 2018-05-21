@@ -219,11 +219,7 @@ var fintools = (function() {
     class PortfolioManager extends React.Component {
         constructor(props) {
             super(props);
-            if (this.props.saveLocal) {
-                this.state = { assets: []}
-            } else {
-                this.state = { assets: this.props.assetList }
-            }
+            this.state = { assets: [] };
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
             this.saveAssets = this.saveAssets.bind(this);
@@ -274,6 +270,19 @@ var fintools = (function() {
                 .then((res)=>{
                     this.setState({ assets: res.data });
                 })
+            } else {
+                // load from localStorage
+                var watchlist = localStorage.getItem('watchList');
+                if (watchlist == null) {
+                    if (this.props.watchlist != undefined)
+                        watchlist = this.props.watchlist; 
+                    else
+                        watchlist = [];
+                }
+                else {
+                    watchlist = JSON.parse(watchlist);
+                }
+                this.setState({ assets: watchlist });
             }
         }
 
@@ -282,10 +291,15 @@ var fintools = (function() {
         }
 
         saveAssets() {
-            axios.put(this.props.urlSave,this.state.assets)
-             .catch((error)=>{
-                 console.log(error);
-             });
+            if (this.props.saveLocal === false) {
+                axios.put(this.props.urlSave,this.state.assets)
+                .catch((error)=>{
+                    console.log(error);
+                });
+            } else {
+                // save to localStorage
+                localStorage.setItem('watchList',JSON.stringify(this.state.assets));
+            }
         }
 
         removeAsset(ticker) {
@@ -305,7 +319,7 @@ var fintools = (function() {
                 e(PortfolioView,{assets: this.state.assets, 
                     removeAsset: this.removeAsset.bind(this),
                     saveAssets: this.saveAssets.bind(this),
-                    showWeights: this.props.saveLocal
+                    showWeights: this.props.showWeights
                 }),
                 (this.props.saveLocal === false) ?
                 e('button',{type:'button', className: 'btn btn-primary savePortfolio',

@@ -10,7 +10,8 @@
         url:`{{ url_for('symbol_lookup') }}`,
         urlSave:`{{ url_for('save_portfolio') }}`,
         urlLoad:`{{ url_for('load_portfolio') }}`,
-        allowSave: true    
+        saveLocal: false,
+        showWeights: true,    
     }),
     document.getElementById('portfoliomgr'));
 </script>

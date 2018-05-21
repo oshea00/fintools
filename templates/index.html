@@ -20,8 +20,9 @@
         url:`{{ url_for('symbol_lookup') }}`,
         urlSave:`{{ url_for('save_portfolio') }}`,
         urlLoad:`{{ url_for('load_portfolio') }}`,
-        allowSave: false,
-        assetList: assets
+        saveLocal: true,
+        watchlist: assets,
+        showWeights: false
     }),
     document.getElementById('portfoliomgr'));
 </script>
