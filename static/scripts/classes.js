@@ -70,22 +70,17 @@ var fintools = (function() {
         constructor(props) {
             super(props);
             this.handleClick = this.handleClick.bind(this);
-            this.handleSave = this.handleSave.bind(this);
         }
 
         handleClick(event) {
             this.props.removeAsset(event.target.value);
         }
 
-        handleSave(event) {
-            this.props.saveAssets();
-        }
-
         render() {
             const assets = this.props.assets;
             return (
+                (assets.length > 0) ?
                 e('div',null,
-                e('h4',null,'Portfolio Assets'),
                 e('table',{className:'portfolioTable table-bordered table-striped'},
                     e('thead',null,
                     e('tr',null,
@@ -94,7 +89,8 @@ var fintools = (function() {
                         e('th',null,'Type'),
                         e('th',null,'Sector'),
                         e('th',null,'Price'),
-                        e('th',null,'Weight'),
+                        (this.props.showWeights) ?
+                        e('th',null,'Weight') : null,
                         e('th',null,'Action')
                     )),
                     e('tbody',null,
@@ -113,16 +109,14 @@ var fintools = (function() {
                                 e('td',null,asset.issueType),
                                 e('td',null,asset.sector),
                                 e('td',null,asset.lastPrice),
-                                e('td',null,asset.weight),
+                                (this.props.showWeights) ?
+                                e('td',null,asset.weight) : null,
                                 e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link',
                                    onClick: this.handleClick.bind(this)}, 'Remove'))
                             ));
                         }
                     ))      
                 ),
-                e('button',{type:'button', className: 'btn btn-primary savePortfolio',
-                    onClick: this.handleSave.bind(this)
-                    },'Save Portfolio'),
                 assets.map((asset)=>{
                     return (
                         e('div',{className:'modal fade', id:'companyinfo'+asset.ticker,tabindex:-1},
@@ -149,7 +143,7 @@ var fintools = (function() {
                         )
                     );
                 }),
-            ))
+            ) : null)
         }
     }
 
@@ -225,7 +219,10 @@ var fintools = (function() {
     class PortfolioManager extends React.Component {
         constructor(props) {
             super(props);
-            this.state = { assets: []}
+            if (this.props.allowSave)
+                this.state = { assets: []}
+            else
+                this.state = { assets: this.props.assetList }
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
             this.saveAssets = this.saveAssets.bind(this);
@@ -267,10 +264,12 @@ var fintools = (function() {
         }
 
         componentDidMount() {
-            axios.get(this.props.urlLoad)
+            if (this.props.allowSave) {
+                axios.get(this.props.urlLoad)
                 .then((res)=>{
                     this.setState({ assets: res.data });
                 })
+            }
         }
 
         componentDidUpdate() {
@@ -295,10 +294,18 @@ var fintools = (function() {
             return (
                 e('div',{className:'portfolio'},
                 e(StockPicker,{url:this.props.url, addAsset: this.addAsset.bind(this)}),
+                (this.props.allowSave) ?
+                e('h4',null,'Portfolio Assets') :
+                e('h4',null,'Watch List'),
                 e(PortfolioView,{assets: this.state.assets, 
                     removeAsset: this.removeAsset.bind(this),
-                    saveAssets: this.saveAssets.bind(this)
-                })
+                    saveAssets: this.saveAssets.bind(this),
+                    showWeights: this.props.allowSave
+                }),
+                (this.props.allowSave) ?
+                e('button',{type:'button', className: 'btn btn-primary savePortfolio',
+                    onClick: this.saveAssets.bind(this)
+                    },'Save Portfolio') : null,                
                 )
             );
         }
