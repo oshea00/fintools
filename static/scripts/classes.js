@@ -115,8 +115,8 @@ var fintools = (function() {
                     e('tr',null,
                         e('th',null,'Action'),
                         e('th',null,'Ticker'),
-                        e('th',null,'Company'),
-                        e('th',null,'30 Day Trend')
+                        e('th',null,'30 Day'),
+                        e('th',null,'Company')
                     )),
                     e('tbody',null,
                     symbols.map(
@@ -126,10 +126,10 @@ var fintools = (function() {
                                     e('td',null,e('button',{type:'button',className:'btn btn-link',value:s.ticker,
                                         onClick: this.handleClick.bind(this)},'Add')),
                                         e('td',null,s.ticker),
-                                        e('td',null,s.name),
                                         e('td',null,
                                             e('span',{className:'sparklines',values:getChartValues(s.chart,'close')}),
-                                        )
+                                        ),
+                                        e('td',null,s.name)
                                 ));
                         }
                     ))      
