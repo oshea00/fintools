@@ -99,6 +99,9 @@ def symbolLookup(dburl,search):
         if len(search) <= 4:
             cur.execute('select symbol, name from symbols where lower(symbol) =  %s',
                 (search.lower(),))
+            if cur.rowcount == 0:
+                cur.execute('select symbol, name from symbols where lower(name) like %s',
+                    (pattern,))
         else:
             cur.execute('select symbol, name from symbols where lower(name) like %s or lower(symbol) like %s limit 20',
                 (pattern,pattern))
