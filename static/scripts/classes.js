@@ -254,6 +254,7 @@ var fintools = (function() {
         handleOnFocus(event) {
             this.setState({search: ''});
             this.setState({charts: []})
+            this.setState({symbols: []})
         }
 
         render() {
