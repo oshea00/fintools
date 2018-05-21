@@ -1,72 +1,6 @@
 var fintools = (function() {
     'use strict';
 
-    class PriceLookup extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = { symbol: '', price: '0.00', hasprice: false, tickerfound: true};
-            this.handleClick = this.handleClick.bind(this);
-            this.handleChange = this.handleChange.bind(this);
-            this.handleOnFocus = this.handleOnFocus.bind(this);
-        }
-
-        handleOnFocus(event) {
-            this.setState({symbol: "",hasprice: false, tickerfound: true});
-        }
-
-        handleChange(event) {
-            this.setState({hasprice: false, tickerfound: true});
-            this.setState({symbol: event.target.value});
-        }
-
-        handleClick(event) {
-            this.setState({hasprice: false, tickerfound: true});
-            axios.get(`https://api.iextrading.com/1.0/stock/${this.state.symbol}/price`)
-                .then(res => {
-                    this.setState({ price: res.data, hasprice: true, tickerfound: true});
-                })
-                .catch(error=> {
-                    this.setState({ hasprice: false, tickerfound: false });
-                });                        
-        }
-
-        render() {
-            return e('form',null,
-                e('label',null,'Stock:',
-                    e('input', { 
-                        type:'text', placeholder: 'Ticker', name: 'symbol', 
-                        value: this.state.symbol, 
-                        onChange: this.handleChange.bind(this),
-                        onFocus: this.handleOnFocus.bind(this) 
-                    })),
-                e('button', {
-                    type: 'button', className:'btn btn-primary',
-                    onClick: this.handleClick.bind(this)
-                },'Lookup'),
-                e(Price, {
-                    symbol: this.state.symbol, 
-                    hasprice: this.state.hasprice, 
-                    tickerfound: this.state.tickerfound, 
-                    price: this.state.price
-                })
-            );
-        }
-    }
-
-    function Price(props) {
-        if (!props.tickerfound) {
-            return (
-                e('div',null,
-                    e('span',null,`Ticker Not Found`)));
-        }
-        if (!props.hasprice) {
-          return null;
-        }
-        return (
-            e('div',null,
-                e('span',null,`${props.symbol} : ${props.price}`)));
-    }
-
     class StockList extends React.Component {
         constructor(props) {
             super(props);
@@ -81,10 +15,6 @@ var fintools = (function() {
             })
             .catch(error=> {
             });                        
-        }
-
-        componentDidUpdate() {
-            $('.sparklines').sparkline('html', { enableTagOptions: true });
         }
 
         render() {
@@ -121,6 +51,12 @@ var fintools = (function() {
     }
 
     function getChartValues(chart,item) {
+        if (chart == undefined)
+            return null;
+        
+        if (typeof(chart) == 'string') {
+            chart = eval(chart);
+        }
         var vals = chart.map(r=>{
             return r[item];
         })
@@ -154,6 +90,7 @@ var fintools = (function() {
                     e('thead',null,
                     e('tr',null,
                         e('th',null,'Symbol'),
+                        e('th',null,'30 Days'),
                         e('th',null,'Type'),
                         e('th',null,'Sector'),
                         e('th',null,'Price'),
@@ -170,6 +107,9 @@ var fintools = (function() {
                                         className:'btn btn-link',
                                         'data-toggle':'modal',
                                         'data-target':'#companyinfo'+asset.ticker},asset.ticker)),
+                                e('td',null,
+                                    e('span',{className:'sparklines',values:getChartValues(asset.chart,'close')}),
+                                ),
                                 e('td',null,asset.issueType),
                                 e('td',null,asset.sector),
                                 e('td',null,asset.lastPrice),
@@ -247,6 +187,10 @@ var fintools = (function() {
             });                        
         }
 
+        componentDidUpdate() {
+            $('.sparklines').sparkline('html', { enableTagOptions: true });
+        }
+
         handleChange(event) {
             this.setState({search: event.target.value});
         }
@@ -290,25 +234,32 @@ var fintools = (function() {
         addAsset (event) {
             // lookup info about ticker and add it - this.props.url
             axios.get(`https://api.iextrading.com/1.0/stock/${event.ticker}/company`)
-                .then(r => {
-                    var newasset = [
-                        {
-                            companyName: r.data.companyName,
-                            ceo: r.data.CEO,
-                            issueType: r.data.issueType,
-                            sector: r.data.sector,
-                            industry: r.data.industry,
-                            weight: '0.0%',
-                            ticker: event.ticker,
-                            lastPrice: event.price,
-                            exchange: r.data.exchange,
-                            description: r.data.description,
-                            website: r.data.website
-                        }
-                    ]
-                    this.setState((prevState,props)=> ({
-                        assets: prevState.assets.concat(newasset)
-                    }));
+                .then(res => {
+                    var asset = res.data;
+                    var ticker = event.ticker;
+                    var price = event.price;
+                    axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/chart`)
+                    .then(res=>{
+                        var newasset = [
+                            {
+                                companyName: asset.companyName,
+                                ceo: asset.CEO,
+                                issueType: asset.issueType,
+                                sector: asset.sector,
+                                industry: asset.industry,
+                                weight: '0.0%',
+                                ticker: ticker,
+                                lastPrice: price,
+                                exchange: asset.exchange,
+                                description: asset.description,
+                                website: asset.website,
+                                chart: res.data
+                            }
+                        ]
+                        this.setState((prevState,props)=> ({
+                            assets: prevState.assets.concat(newasset)
+                        }));
+                    });
                 })
                 .catch(error=>{
 
@@ -320,6 +271,10 @@ var fintools = (function() {
                 .then((res)=>{
                     this.setState({ assets: res.data });
                 })
+        }
+
+        componentDidUpdate() {
+            $('.sparklines').sparkline('html', { enableTagOptions: true });
         }
 
         saveAssets() {
@@ -350,8 +305,6 @@ var fintools = (function() {
     }
              
     return {
-        Symbol: Symbol,
-        PriceLookup: PriceLookup,
         PortfolioManager: PortfolioManager
     };
 
