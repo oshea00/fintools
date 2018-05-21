@@ -71,7 +71,6 @@ var fintools = (function() {
         constructor(props) {
             super(props);
             this.handleClick = this.handleClick.bind(this);
-            this.state = { charts: []};
         }
 
         handleClick(event) {
@@ -84,31 +83,14 @@ var fintools = (function() {
             });                        
         }
 
-        componentDidMount() {
-            const symbols = this.props.symbols;
-            symbols.map(s=>{
-                var ticker = s[0];
-                var companyName = s[1];
-                axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/chart`)
-                .then(res=>{
-                    var newChart = [{
-                        'ticker': ticker,
-                        name: companyName,
-                        chart: res.data
-                    }];
-                    this.setState((prevState,props)=>({
-                        charts: prevState.charts.concat(newChart)
-                    }));
-                });
-            });
-        }
-
         componentDidUpdate() {
             $('.sparklines').sparkline('html', { enableTagOptions: true });
         }
 
         render() {
-            const symbols = this.state.charts;
+            const symbols = this.props.charts;
+            if (symbols.length==0)
+                return null;
             return (
                 e('table',{className:'assetList table-bordered table-striped'},
                     e('thead',null,
@@ -234,7 +216,7 @@ var fintools = (function() {
     class StockPicker extends React.Component {
         constructor(props) {
             super(props);
-            this.state = { symbols: [], search: ''};
+            this.state = { symbols: [], charts: [], search: ''};
             this.handleClick = this.handleClick.bind(this);        
             this.handleChange = this.handleChange.bind(this);        
             this.handleOnFocus = this.handleOnFocus.bind(this);
@@ -244,8 +226,22 @@ var fintools = (function() {
             const srch = this.state.search;
             axios.get(this.props.url,{ params: { search: srch} })
             .then(res => {
-                
                 this.setState({ symbols: res.data});
+                res.data.map(r=>{
+                    var ticker = r[0];
+                    var companyName = r[1];
+                    axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/chart`)
+                    .then(res=>{
+                        var newChart = [{
+                            'ticker': ticker,
+                            name: companyName,
+                            chart: res.data
+                        }];
+                        this.setState((prevState,props)=>({
+                            charts: prevState.charts.concat(newChart)
+                        }));
+                    });
+                });    
             })
             .catch(error=> {
             });                        
@@ -257,6 +253,7 @@ var fintools = (function() {
 
         handleOnFocus(event) {
             this.setState({search: ''});
+            this.setState({charts: []})
         }
 
         render() {
@@ -275,7 +272,7 @@ var fintools = (function() {
                 (this.state.symbols.length > 10) ? 
                     e('span',null,'Limited to 20 results. You may want to narrow search.') : null,
                 (this.state.symbols.length > 0) ? 
-                    e(StockList,{symbols:this.state.symbols, addAsset: this.props.addAsset }) : null
+                    e(StockList,{symbols:this.state.symbols,charts: this.state.charts, addAsset: this.props.addAsset }) : null
             ));
         }
     }
