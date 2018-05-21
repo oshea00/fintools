@@ -93,6 +93,8 @@ def getSymbols(dburl):
 def symbolLookup(dburl,search):
     try:
         rows = []
+        if (len(search)==0):
+            return rows
         conn = pg.connect(dburl)
         cur = conn.cursor()
         pattern = str.format("%{}%",search.lower())
