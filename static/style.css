@@ -190,6 +190,10 @@ ul {
     width: 800px;
 }
 
+.assetList td {
+    padding: 3px;
+}
+
 .portfolioTable {
     width: 800px;
 }
