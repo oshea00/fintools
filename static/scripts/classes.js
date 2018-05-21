@@ -225,6 +225,29 @@ var fintools = (function() {
             this.saveAssets = this.saveAssets.bind(this);
         }
 
+        reprice() {
+            var promises = [];
+            var currAssets =[];
+            this.state.assets.forEach((a)=>{ currAssets.push(Object.assign({},a))});
+
+            currAssets.forEach((a)=>{
+                promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/quote`));
+            });
+
+            axios.all(promises)
+                .then(results=>{
+                    results.forEach((r,i)=>{
+                        var ticker = r.request.responseURL.replace("https://api.iextrading.com/1.0/stock/","")
+                                                     .replace("/quote",'');
+                        var assetfor = currAssets.filter(a=>a.ticker===ticker);
+                        if (assetfor.length>0) {
+                            assetfor[0].lastPrice = r.data.latestPrice;
+                        }
+                    });    
+                    this.setState({ assets: currAssets });            
+                })
+        }
+
         addAsset (event) {
             // prevent duplicates being added
             if (this.state.assets.filter(a=>{return a.ticker == event.ticker}).length>0)
@@ -284,6 +307,13 @@ var fintools = (function() {
                 }
                 this.setState({ assets: watchlist });
             }
+            if (this.props.reprice) {
+                this.timerID = setInterval(()=>this.reprice(),1000);          
+            }
+        }
+
+        componentWillUnmount() {
+            clearInterval(this.timerID);
         }
 
         componentDidUpdate() {
