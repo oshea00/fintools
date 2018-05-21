@@ -219,16 +219,21 @@ var fintools = (function() {
     class PortfolioManager extends React.Component {
         constructor(props) {
             super(props);
-            if (this.props.allowSave)
+            if (this.props.saveLocal) {
                 this.state = { assets: []}
-            else
+            } else {
                 this.state = { assets: this.props.assetList }
+            }
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
             this.saveAssets = this.saveAssets.bind(this);
         }
 
         addAsset (event) {
+            // prevent duplicates being added
+            if (this.state.assets.filter(a=>{return a.ticker == event.ticker}).length>0)
+                return;
+
             // lookup info about ticker and add it - this.props.url
             axios.get(`https://api.iextrading.com/1.0/stock/${event.ticker}/company`)
                 .then(res => {
@@ -264,7 +269,7 @@ var fintools = (function() {
         }
 
         componentDidMount() {
-            if (this.props.allowSave) {
+            if (this.props.saveLocal === false) {
                 axios.get(this.props.urlLoad)
                 .then((res)=>{
                     this.setState({ assets: res.data });
@@ -294,23 +299,26 @@ var fintools = (function() {
             return (
                 e('div',{className:'portfolio'},
                 e(StockPicker,{url:this.props.url, addAsset: this.addAsset.bind(this)}),
-                (this.props.allowSave) ?
+                (this.props.saveLocal === false) ?
                 e('h4',null,'Portfolio Assets') :
-                e('h4',null,'Watch List'),
+                e('h4',null,'Watchlist'),
                 e(PortfolioView,{assets: this.state.assets, 
                     removeAsset: this.removeAsset.bind(this),
                     saveAssets: this.saveAssets.bind(this),
-                    showWeights: this.props.allowSave
+                    showWeights: this.props.saveLocal
                 }),
-                (this.props.allowSave) ?
+                (this.props.saveLocal === false) ?
                 e('button',{type:'button', className: 'btn btn-primary savePortfolio',
                     onClick: this.saveAssets.bind(this)
-                    },'Save Portfolio') : null,                
+                    },'Save Portfolio') : 
+                e('button',{type:'button', className: 'btn btn-primary savePortfolio',
+                onClick: this.saveAssets.bind(this)
+                },'Save Watchlist'),                
                 )
             );
         }
     }
-             
+
     return {
         PortfolioManager: PortfolioManager
     };
