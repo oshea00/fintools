@@ -70,44 +70,82 @@ var fintools = (function() {
     class StockList extends React.Component {
         constructor(props) {
             super(props);
-            this.handleClick = this.handleClick.bind(this);        
+            this.handleClick = this.handleClick.bind(this);
+            this.state = { charts: []};
         }
 
         handleClick(event) {
             const ticker = event.target.value;
             axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/price`)
             .then(res => {
-                this.props.addAsset({value: ticker, price: res.data});
+                this.props.addAsset({'ticker': ticker, price: res.data});
             })
             .catch(error=> {
             });                        
         }
 
-        render() {
+        componentDidMount() {
             const symbols = this.props.symbols;
+            symbols.map(s=>{
+                var ticker = s[0];
+                var companyName = s[1];
+                axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/chart`)
+                .then(res=>{
+                    var newChart = [{
+                        'ticker': ticker,
+                        name: companyName,
+                        chart: res.data
+                    }];
+                    this.setState((prevState,props)=>({
+                        charts: prevState.charts.concat(newChart)
+                    }));
+                });
+            });
+        }
+
+        componentDidUpdate() {
+            $('.sparklines').sparkline('html', { enableTagOptions: true });
+        }
+
+        render() {
+            const symbols = this.state.charts;
             return (
                 e('table',{className:'assetList table-bordered table-striped'},
                     e('thead',null,
                     e('tr',null,
                         e('th',null,'Action'),
                         e('th',null,'Ticker'),
-                        e('th',null,'Company')
+                        e('th',null,'Company'),
+                        e('th',null,'30 Day Trend')
                     )),
                     e('tbody',null,
                     symbols.map(
                         (s) => {
                             return (
                                 e('tr',null,
-                                    e('td',null,e('button',{type:'button',className:'btn btn-link',value:s[0],
+                                    e('td',null,e('button',{type:'button',className:'btn btn-link',value:s.ticker,
                                         onClick: this.handleClick.bind(this)},'Add')),
-                                        e('td',null,s[0]),
-                                        e('td',null,s[1])
+                                        e('td',null,s.ticker),
+                                        e('td',null,s.name),
+                                        e('td',null,
+                                            e('span',{className:'sparklines',values:getChartValues(s.chart,'close')}),
+                                        )
                                 ));
                         }
                     ))      
                 )
             );
         }
+    }
+
+    function getChartValues(chart,item) {
+        var vals = chart.map(r=>{
+            return r[item];
+        })
+        var valStr = vals.reduce((p,c)=>{
+            return p+','+c;
+        })
+        return valStr;
     }
 
     class PortfolioView extends React.Component {
@@ -206,6 +244,7 @@ var fintools = (function() {
             const srch = this.state.search;
             axios.get(this.props.url,{ params: { search: srch} })
             .then(res => {
+                
                 this.setState({ symbols: res.data});
             })
             .catch(error=> {
@@ -252,7 +291,7 @@ var fintools = (function() {
 
         addAsset (event) {
             // lookup info about ticker and add it - this.props.url
-            axios.get(`https://api.iextrading.com/1.0/stock/${event.value}/company`)
+            axios.get(`https://api.iextrading.com/1.0/stock/${event.ticker}/company`)
                 .then(r => {
                     var newasset = [
                         {
@@ -262,7 +301,7 @@ var fintools = (function() {
                             sector: r.data.sector,
                             industry: r.data.industry,
                             weight: '0.0%',
-                            ticker: event.value,
+                            ticker: event.ticker,
                             lastPrice: event.price,
                             exchange: r.data.exchange,
                             description: r.data.description,

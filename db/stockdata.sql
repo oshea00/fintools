@@ -37,3 +37,11 @@ create index symnameix on symbols(name);
 
 select * from symbols where lower(name) like '%apple%' or lower(symbol) like '%apple%';
 
+create table user_portfolios (
+  email text not null unique,
+  portfolio text
+);
+
+insert into user_portfolios select email from users;
+
+
