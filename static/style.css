@@ -229,4 +229,14 @@ a.assetUrl:hover {
     color: #2a53da;
 }
 
+.edittext {
+    color: black;
+    padding: 3px;
+}
+
+.editpencil {
+    padding-left: 5px;
+    font-size: 10pt;
+}
+
 

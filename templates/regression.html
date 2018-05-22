@@ -1,3 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
+<div id="edittest"></div>
+{% endblock %}
+{% block apps %}
+<script>
+const e = React.createElement;
+
+function printChange(id,value) {
+    console.log('updated: '+id+' to '+value);
+}
+
+ReactDOM.render(
+    e(fintools.EditText,{value:"Hi There", id:"AAPL", onUpdate: printChange.bind(this) }),
+document.getElementById('edittest'));
+</script>
 {% endblock %}

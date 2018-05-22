@@ -114,7 +114,8 @@ var fintools = (function() {
                                 e('td',null,asset.sector),
                                 e('td',null,asset.lastPrice),
                                 (this.props.showWeights) ?
-                                e('td',null,asset.weight) : null,
+                                e('td',null,
+                                e(EditText,{value:asset.weight, width:60, id:asset.ticker, onUpdate: this.props.onUpdate })) : null,
                                 e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link',
                                    onClick: this.handleClick.bind(this)}, 'Remove'))
                             ));
@@ -343,6 +344,10 @@ var fintools = (function() {
             $('.sparklines').sparkline('html', { enableTagOptions: true });
         }
 
+        onUpdate(ticker,weight) {
+            console.log('updated: '+ticker+' to '+weight);
+        }
+
         saveAssets() {
             if (this.props.saveLocal === false) {
                 axios.put(this.props.urlSave,this.state.assets)
@@ -372,7 +377,8 @@ var fintools = (function() {
                 e(PortfolioView,{assets: this.state.assets, 
                     removeAsset: this.removeAsset.bind(this),
                     saveAssets: this.saveAssets.bind(this),
-                    showWeights: this.props.showWeights
+                    showWeights: this.props.showWeights,
+                    onUpdate: this.onUpdate
                 }),
                 (this.props.saveLocal === false) ?
                 e('button',{type:'button', className: 'btn btn-primary savePortfolio',
@@ -386,8 +392,43 @@ var fintools = (function() {
         }
     }
 
+    class EditText extends React.Component {
+        constructor(props) {
+            super(props);
+            this.width = this.props.width || 150; 
+            this.state = { editing: false, value: this.props.value };
+            this.handleClick = this.handleClick.bind(this);
+            this.handleChange = this.handleChange.bind(this);
+        }
+
+        handleClick(event) {
+            var editing = !this.state.editing;
+            this.setState({ editing: editing });
+            if (!editing && this.props.onUpdate != undefined)
+            {
+                this.props.onUpdate(this.props.id,this.state.value);
+            }
+        }
+
+        handleChange(event) {
+            this.setState({value: event.target.value});
+        }
+
+          render() {
+            return (
+                e('div',{className:'edittext'},
+                    (this.state.editing) ? 
+                        e('input',{type:'text', style: {width:this.width}, value: this.state.value, onChange:this.handleChange.bind(this)}) : 
+                        e('span',{ style: {display:'inline-block', 'vertical-align':'middle', overflow:'hidden', width:this.width}},this.state.value),
+                        e('span',{className:'oi oi-pencil editpencil', onClick:this.handleClick.bind(this)})
+                )
+            );
+        }
+    }
+
     return {
-        PortfolioManager: PortfolioManager
+        PortfolioManager: PortfolioManager,
+        EditText: EditText
     };
 
 }());

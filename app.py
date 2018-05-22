@@ -165,6 +165,10 @@ def confirm(confirmationid):
 def protected():
     return redirect(url_for('get_index'))
 
+@app.route('/regression')
+def regression():
+    return render_template('regression.html')
+
 @app.route('/signout')
 def signout():
     flask_login.logout_user()
