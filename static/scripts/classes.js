@@ -120,7 +120,7 @@ var fintools = (function() {
                 assets.map((asset)=>{
                     return (
                         e('div',{className:'modal fade', id:'companyinfo'+asset.ticker,tabindex:-1},
-                            e('div',{className:'modal-dialog'},
+                            e('div',{className:'modal-dialog modal-dialog-centered'},
                                 e('div',{className:'modal-content'},
                                     e('div',{className:'modal-header'},
                                         e('h5',{className:'modal-title'},asset.companyName),
