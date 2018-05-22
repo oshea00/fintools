@@ -22,10 +22,10 @@ var fintools = (function() {
             if (symbols.length==0)
                 return null;
             return (
-                e('table',{className:'assetList table-bordered table-striped'},
+                e('table',{className:'assetList table-striped'},
                     e('thead',null,
                     e('tr',null,
-                        e('th',null,'Action'),
+                        e('th',null,''),
                         e('th',null,'Ticker'),
                         e('th',null,'30 Day'),
                         e('th',null,'Company')
@@ -35,8 +35,8 @@ var fintools = (function() {
                         (s) => {
                             return (
                                 e('tr',null,
-                                    e('td',null,e('button',{type:'button',className:'btn btn-link',value:s.ticker,
-                                        onClick: this.handleClick.bind(this)},'Add')),
+                                    e('td',null,e('button',{type:'button',className:'btn btn-link oi oi-plus',value:s.ticker,
+                                        onClick: this.handleClick.bind(this)})),
                                         e('td',null,s.ticker),
                                         e('td',null,
                                             e('span',{className:'sparklines',values:getChartValues(s.chart,'close')}),
@@ -80,12 +80,37 @@ var fintools = (function() {
             this.props.removeAsset(event.target.value);
         }
 
+        totalBalance() {
+            var bal=0;
+            this.props.assets.forEach(a=>{
+                var price = parseFloat(a.lastPrice);
+                var shares = parseFloat(a.shares);
+                bal = bal + (price * shares);
+            });
+            return bal.toFixed(2);
+        }
+
+        weightedBalance(ticker) {
+            var bal=0;
+            var tickerTotal=0;
+            this.props.assets.forEach(a=>{
+                var price = parseFloat(a.lastPrice);
+                var shares = parseFloat(a.shares);
+                if (a.ticker === ticker){
+                    tickerTotal = price * shares;
+                }
+                bal = bal + (price * shares);
+            });
+
+            return ((tickerTotal/bal)*100).toFixed(1)+'%';
+        }
+
         render() {
             const assets = this.props.assets;
             return (
                 (assets.length > 0) ?
                 e('div',null,
-                e('table',{className:'portfolioTable table-bordered table-striped'},
+                e('table',{className:'portfolioTable table-striped'},
                     e('thead',null,
                     e('tr',null,
                         e('th',null,'Symbol'),
@@ -93,9 +118,11 @@ var fintools = (function() {
                         e('th',null,'Type'),
                         e('th',null,'Sector'),
                         e('th',null,'Price'),
+                        e('th',null,'Shares'),
                         (this.props.showWeights) ?
-                        e('th',null,'Weight') : null,
-                        e('th',null,'Action')
+                        e('th',null,'Target') : null,
+                        e('th',null,'Weight'),
+                        e('th',null,'')
                     )),
                     e('tbody',null,
                     assets.map(
@@ -112,15 +139,22 @@ var fintools = (function() {
                                 ),
                                 e('td',null,asset.issueType),
                                 e('td',null,asset.sector),
-                                e('td',null,asset.lastPrice),
+                                e('td',null,parseFloat(asset.lastPrice).toFixed(2)),
+                                e('td',null,
+                                e(EditText,{value:asset.shares, width:65, align:'right', id:asset.ticker, field:'shares', onUpdate: this.props.onUpdate })),
                                 (this.props.showWeights) ?
                                 e('td',null,
-                                e(EditText,{value:asset.weight, width:65, id:asset.ticker, onUpdate: this.props.onUpdate })) : null,
-                                e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link',
-                                   onClick: this.handleClick.bind(this)}, 'Remove'))
+                                e(EditText,{value:asset.weight, width:65, align:'right', id:asset.ticker, field:'weight', onUpdate: this.props.onUpdate })) : null,
+                                e('td',null,this.weightedBalance(asset.ticker)),
+                                e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link oi oi-x',
+                                   onClick: this.handleClick.bind(this)}))
                             ));
                         }
-                    ))      
+                    ),
+                    e('tr',{style:{'background-color':'#d2dbe2'}},
+                        e('td',{colspan:1,style:{'border-right':'0px'}},'Balance:'),
+                        e('td',{colspan:(this.props.showWeights)?8:7,style:{'border-left':'0px'}},this.totalBalance())),
+                    )      
                 ),
                 assets.map((asset)=>{
                     return (
@@ -295,6 +329,7 @@ var fintools = (function() {
                                 weight: '0.0%',
                                 ticker: ticker,
                                 lastPrice: price,
+                                shares: '1',
                                 exchange: asset.exchange,
                                 description: asset.description,
                                 website: asset.website,
@@ -345,15 +380,22 @@ var fintools = (function() {
             $('.sparklines').sparkline('html', { enableTagOptions: true });
         }
 
-        onUpdate(ticker,weight) {
+        onUpdate(ticker,value,field) {
             var currAssets = [];
             this.state.assets.forEach((a)=>{ currAssets.push(Object.assign({},a))});
+            var w = parseFloat(value);
             currAssets.forEach(a=>{
                 if (a.ticker === ticker)
                 {
-                    var w = parseFloat(weight)
-                    if (!isNaN(w)) {
-                        a.weight = w.toFixed(1)+'%';
+                    if (field==='weight') {
+                        if (!isNaN(w)) {
+                            a.weight = w.toFixed(1)+'%';
+                        }
+                    }
+                    if (field==='shares') {
+                        if (!isNaN(w)) {
+                            a.shares = w.toFixed(0);
+                        }
                     }
                 }
             });
@@ -418,7 +460,7 @@ var fintools = (function() {
             this.setState({ editing: editing });
             if (!editing && this.props.onUpdate != undefined)
             {
-                this.props.onUpdate(this.props.id,this.state.value);
+                this.props.onUpdate(this.props.id,this.state.value,this.props.field);
             }
         }
 
@@ -431,7 +473,7 @@ var fintools = (function() {
                 e('div',{className:'edittext'},
                     (this.state.editing) ? 
                         e('input',{type:'text', style: {width:this.width}, value: this.state.value, onChange:this.handleChange.bind(this)}) : 
-                        e('span',{ style: {display:'inline-block', 'vertical-align':'middle', overflow:'hidden', width:this.width}},this.props.value),
+                        e('span',{ style: {display:'inline-block', 'vertical-align':'middle','text-align':this.props.align, overflow:'hidden', width:this.width}},this.props.value),
                         e('span',{className:'oi oi-pencil editpencil', onClick:this.handleClick.bind(this)})
                 )
             );
