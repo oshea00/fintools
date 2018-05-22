@@ -115,7 +115,7 @@ var fintools = (function() {
                                 e('td',null,asset.lastPrice),
                                 (this.props.showWeights) ?
                                 e('td',null,
-                                e(EditText,{value:asset.weight, width:60, id:asset.ticker, onUpdate: this.props.onUpdate })) : null,
+                                e(EditText,{value:asset.weight, width:65, id:asset.ticker, onUpdate: this.props.onUpdate })) : null,
                                 e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link',
                                    onClick: this.handleClick.bind(this)}, 'Remove'))
                             ));
@@ -230,6 +230,7 @@ var fintools = (function() {
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
             this.saveAssets = this.saveAssets.bind(this);
+            this.onUpdate = this.onUpdate.bind(this);
         }
 
         reprice() {
@@ -345,7 +346,18 @@ var fintools = (function() {
         }
 
         onUpdate(ticker,weight) {
-            console.log('updated: '+ticker+' to '+weight);
+            var currAssets = [];
+            this.state.assets.forEach((a)=>{ currAssets.push(Object.assign({},a))});
+            currAssets.forEach(a=>{
+                if (a.ticker === ticker)
+                {
+                    var w = parseFloat(weight)
+                    if (!isNaN(w)) {
+                        a.weight = w.toFixed(1)+'%';
+                    }
+                }
+            });
+            this.setState({assets:currAssets});            
         }
 
         saveAssets() {
@@ -378,7 +390,7 @@ var fintools = (function() {
                     removeAsset: this.removeAsset.bind(this),
                     saveAssets: this.saveAssets.bind(this),
                     showWeights: this.props.showWeights,
-                    onUpdate: this.onUpdate
+                    onUpdate: this.onUpdate.bind(this)
                 }),
                 (this.props.saveLocal === false) ?
                 e('button',{type:'button', className: 'btn btn-primary savePortfolio',
@@ -419,7 +431,7 @@ var fintools = (function() {
                 e('div',{className:'edittext'},
                     (this.state.editing) ? 
                         e('input',{type:'text', style: {width:this.width}, value: this.state.value, onChange:this.handleChange.bind(this)}) : 
-                        e('span',{ style: {display:'inline-block', 'vertical-align':'middle', overflow:'hidden', width:this.width}},this.state.value),
+                        e('span',{ style: {display:'inline-block', 'vertical-align':'middle', overflow:'hidden', width:this.width}},this.props.value),
                         e('span',{className:'oi oi-pencil editpencil', onClick:this.handleClick.bind(this)})
                 )
             );
