@@ -90,6 +90,15 @@ var fintools = (function() {
             return bal.toFixed(2);
         }
 
+        totalWeights() {
+            var bal=0;
+            this.props.assets.forEach(a=>{
+                bal = bal + parseFloat(a.weight);
+            });
+
+            return (bal).toFixed(1)+'%';
+        }
+
         weightedBalance(ticker) {
             var bal=0;
             var tickerTotal=0;
@@ -151,11 +160,16 @@ var fintools = (function() {
                             ));
                         }
                     ),
+                    (this.props.showWeights) ?
                     e('tr',{style:{'background-color':'#d2dbe2'}},
-                        e('td',{colspan:1,style:{'border-right':'0px'}},'Balance:'),
-                        e('td',{colspan:(this.props.showWeights)?8:7,style:{'border-left':'0px'}},this.totalBalance())),
-                    )      
-                ),
+                            e('td',{colspan:1,style:{'border-right':'0px'}},'Balance:'),
+                            e('td',{colspan:6,style:{'border-left':'0px'}},this.totalBalance()),
+                            e('td',{colspan:2},this.totalWeights())) 
+                        : 
+                    e('tr',{style:{'background-color':'#d2dbe2'}},
+                            e('td',{colspan:1,style:{'border-right':'0px'}},'Balance:'),
+                            e('td',{colspan:7,style:{'border-left':'0px'}},this.totalBalance()))
+                )),
                 assets.map((asset)=>{
                     return (
                         e('div',{className:'modal fade', id:'companyinfo'+asset.ticker,tabindex:-1},
