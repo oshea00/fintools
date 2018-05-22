@@ -113,6 +113,7 @@ var fintools = (function() {
                 e('table',{className:'portfolioTable table-striped'},
                     e('thead',null,
                     e('tr',null,
+                        e('th',null,''),
                         e('th',null,'Symbol'),
                         e('th',null,'30 Days'),
                         e('th',null,'Type'),
@@ -122,13 +123,14 @@ var fintools = (function() {
                         (this.props.showWeights) ?
                         e('th',null,'Target') : null,
                         e('th',null,'Weight'),
-                        e('th',null,'')
                     )),
                     e('tbody',null,
                     assets.map(
                         (asset) => {
                             return (
                                 e('tr',null,
+                                e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link oi oi-x',
+                                   onClick: this.handleClick.bind(this)})),
                                 e('td',null,
                                     e('button',{type:'button',
                                         className:'btn btn-link',
@@ -145,9 +147,7 @@ var fintools = (function() {
                                 (this.props.showWeights) ?
                                 e('td',null,
                                 e(EditText,{value:asset.weight, width:65, align:'right', id:asset.ticker, field:'weight', onUpdate: this.props.onUpdate })) : null,
-                                e('td',null,this.weightedBalance(asset.ticker)),
-                                e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link oi oi-x',
-                                   onClick: this.handleClick.bind(this)}))
+                                e('td',null,this.weightedBalance(asset.ticker))
                             ));
                         }
                     ),
