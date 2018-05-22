@@ -60,7 +60,7 @@ var fintools = (function() {
 
         if (chart.length === 0)
             return null;
-            
+
         var vals = chart.map(r=>{
             return r[item];
         })
@@ -173,6 +173,7 @@ var fintools = (function() {
                         var newChart = [{
                             'ticker': ticker,
                             name: companyName,
+                            chartDate: Date.today().toString("yyyy-MM-dd"),
                             chart: res.data
                         }];
                         this.setState((prevState,props)=>({
@@ -237,16 +238,32 @@ var fintools = (function() {
 
             currAssets.forEach((a)=>{
                 promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/quote`));
+                if (a.chartDate==undefined || !Date.parse(a.chartDate).equals(Date.today())) {
+                    promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/chart`));
+                }
             });
 
             axios.all(promises)
                 .then(results=>{
                     results.forEach((r,i)=>{
-                        var ticker = r.request.responseURL.replace("https://api.iextrading.com/1.0/stock/","")
-                                                     .replace("/quote",'');
-                        var assetfor = currAssets.filter(a=>a.ticker===ticker);
-                        if (assetfor.length>0) {
-                            assetfor[0].lastPrice = r.data.latestPrice;
+                        var respUrl = r.request.responseURL;
+                        var ticker = "";
+                        var assetfor = "";
+                        if (respUrl.lastIndexOf("/quote")>0) {
+                            ticker = respUrl.replace("https://api.iextrading.com/1.0/stock/","")
+                            .replace("/quote",'');
+                            assetfor = currAssets.filter(a=>a.ticker===ticker);
+                            if (assetfor.length>0) {
+                                assetfor[0].lastPrice = r.data.latestPrice;
+                            }
+                        } else {
+                            ticker = respUrl.replace("https://api.iextrading.com/1.0/stock/","")
+                            .replace("/chart",'');
+                            assetfor = currAssets.filter(a=>a.ticker===ticker);
+                            if (assetfor.length>0) {
+                                assetfor[0].chartDate = Date.today().toString("yyyy-MM-dd");
+                                assetfor[0].chart = r.data;
+                            }
                         }
                     });    
                     this.setState({ assets: currAssets });            
@@ -279,6 +296,7 @@ var fintools = (function() {
                                 exchange: asset.exchange,
                                 description: asset.description,
                                 website: asset.website,
+                                chartDate: Date.today().toString("yyyy-MM-dd"),
                                 chart: res.data
                             }
                         ]
