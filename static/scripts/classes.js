@@ -57,6 +57,10 @@ var fintools = (function() {
         if (typeof(chart) == 'string') {
             chart = eval(chart);
         }
+
+        if (chart.length === 0)
+            return null;
+            
         var vals = chart.map(r=>{
             return r[item];
         })
