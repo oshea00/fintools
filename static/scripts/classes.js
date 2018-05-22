@@ -219,6 +219,7 @@ var fintools = (function() {
     class PortfolioManager extends React.Component {
         constructor(props) {
             super(props);
+            this.repriceDelay = this.props.repriceDelay || 10000;
             this.state = { assets: [] };
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
@@ -308,7 +309,7 @@ var fintools = (function() {
                 this.setState({ assets: watchlist });
             }
             if (this.props.reprice) {
-                this.timerID = setInterval(()=>this.reprice(),2000);          
+                this.timerID = setInterval(()=>this.reprice(),this.repriceDelay);          
             }
         }
 
