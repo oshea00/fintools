@@ -162,13 +162,14 @@ var fintools = (function() {
                     ),
                     (this.props.showWeights) ?
                     e('tr',{style:{'background-color':'#d2dbe2'}},
-                            e('td',{colspan:1,style:{'border-right':'0px'}},'Balance:'),
-                            e('td',{colspan:6,style:{'border-left':'0px'}},this.totalBalance()),
-                            e('td',{colspan:2},this.totalWeights())) 
+                            e('td',{colspan:1},'Balance:'),
+                            e('td',{colspan:6},this.totalBalance()),
+                            e('td',{colspan:2},this.totalWeights())
+                        ) 
                         : 
                     e('tr',{style:{'background-color':'#d2dbe2'}},
-                            e('td',{colspan:1,style:{'border-right':'0px'}},'Balance:'),
-                            e('td',{colspan:7,style:{'border-left':'0px'}},this.totalBalance()))
+                            e('td',{colspan:1},'Balance:'),
+                            e('td',{colspan:7},this.totalBalance()))
                 )),
                 assets.map((asset)=>{
                     return (
