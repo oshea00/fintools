@@ -10,6 +10,7 @@ import plotly.graph_objs as go
 from scipy.optimize import minimize
 from io import StringIO
 import numpy as np
+import json
 
 def getLast30days(symbol,src = 'yahoo'):
     end = dt.datetime.now()
@@ -371,6 +372,15 @@ def importSymbols(dburl,logger=None):
             print(ex)
     else:
         return symbolsLoaded
+
+def getrebalance(jsonreq,logger):
+    r, pos, msg = rebalance(jsonreq['minbal'],
+        jsonreq['maxbal'],
+        np.array(jsonreq['ax']),
+        np.array(jsonreq['px']),
+        jsonreq['tol'])
+    res = dict(result='true' if r==True else 'false',positions=list(pos),message=msg)
+    return json.dumps(res)
 
 def rebalance(minbal,maxbal,ax,px,tol):
     mintrade = 1

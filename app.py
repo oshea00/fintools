@@ -281,7 +281,19 @@ def save_portfolio():
     except Exception as ex:
         app.logger.error(ex)
     return "OK"
-        
+
+@app.route('/rebalance',methods=['PUT'])
+def rebalance():
+    p = ""
+    jsondoc = ""
+    if len(request.data) > 50000:
+        return "bad file", 405
+    try:
+        jsondoc = stockdb.getrebalance(request.json,app.logger)
+    except Exception as ex:
+        app.logger.error(ex)
+    return jsondoc
+
 @app.route('/api/v1/portfolio',methods=['GET'])
 @flask_login.login_required
 def load_portfolio():

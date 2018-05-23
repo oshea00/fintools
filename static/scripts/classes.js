@@ -275,7 +275,7 @@ var fintools = (function() {
         constructor(props) {
             super(props);
             this.repriceDelay = this.props.repriceDelay || 10000;
-            this.state = { assets: [] };
+            this.state = { assets: [], message: "" };
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
             this.saveAssets = this.saveAssets.bind(this);
@@ -318,7 +318,7 @@ var fintools = (function() {
                             }
                         }
                     });    
-                    this.setState({ assets: currAssets });            
+                    this.setState({ assets: currAssets, message: '' });            
                 })
         }
 
@@ -438,7 +438,35 @@ var fintools = (function() {
         }
 
         rebalancePortfolio() {
-            alert('rebalancing');
+            this.setState({ message: ""});
+            var assets = this.state.assets;
+            var minbal = assets.map(a=>a.lastPrice*a.shares).reduce((p,c)=>p+c);
+            var totaltarget = assets.map(a=>parseFloat(a.weight)/100.0).reduce((p,c)=>p+c);
+            if (isNaN(totaltarget)) {
+                this.setState({message: 'Fill-in Target weights - must total 100%'});
+                return;
+            } else 
+            if (Math.abs(totaltarget - 1.0)>Number.EPSILON) {
+                this.setState({message: 'Target weights must total 100%'});
+                return;
+            }
+            var reqdata = {
+                minbal: minbal,
+                maxbal: minbal+500.00,
+                tol: 0.01,
+                ax: assets.map(a=>parseFloat(a.weight)/100.0),
+                px: assets.map(a=>a.lastPrice)
+            }
+            axios.put(this.props.urlRebalance,reqdata)
+                .then(res=>{
+                    var currAssets = [];
+                    this.state.assets.forEach((a)=>{currAssets.push(Object.assign({},a))});
+                    var positions = res.data.positions;
+                    var result = res.data.result;
+                    var message = res.data.message;
+                    currAssets.forEach((a,i)=>a.shares = positions[i]);
+                    this.setState({assets:currAssets});
+                });
         }
 
         render() {
@@ -465,6 +493,7 @@ var fintools = (function() {
                 e('button',{type:'button', className: 'btn btn-primary portfolioButton',
                 onClick: this.rebalancePortfolio.bind(this)
                 },'Rebalance') : null,
+                e('span',null,this.state.message)
                 )
             );
         }
