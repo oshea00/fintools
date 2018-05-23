@@ -292,7 +292,10 @@ var fintools = (function() {
             this.state.assets.forEach((a)=>{ currAssets.push(Object.assign({},a))});
 
             currAssets.forEach((a)=>{
-                promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/quote`));
+                if (utils.isMarketOpen())
+                {
+                    promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/quote`));
+                }
                 if (a.chartDate==undefined || !Date.parse(a.chartDate).equals(Date.today())) {
                     promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/chart`));
                 }
@@ -513,12 +516,17 @@ var fintools = (function() {
         }
 
         render() {
-            return (
-                (this.isOn) ?
-                e('span',{style:{'animation-name':'strobeGreenOff','animation-duration':'2s'}},this.props.value)
-                : 
-                e('span',{style:{'animation-name':'strobeGreenOn','animation-duration':'2s'}},this.props.value)
-            );
+            if (utils.isMarketOpen())
+            {
+                return (
+                    (this.isOn) ?
+                    e('span',{style:{'animation-name':'strobeGreenOff','animation-duration':'2s'}},this.props.value)
+                    : 
+                    e('span',{style:{'animation-name':'strobeGreenOn','animation-duration':'2s'}},this.props.value)
+                );
+                } else {
+                    return (e('span',null,this.props.value));
+            }
         } 
     }
 
