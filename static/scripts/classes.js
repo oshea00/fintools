@@ -529,6 +529,20 @@ var fintools = (function() {
             this.state = { editing: false, value: this.props.value };
             this.handleClick = this.handleClick.bind(this);
             this.handleChange = this.handleChange.bind(this);
+            this.handleFocus = this.handleFocus.bind(this);
+            this.handleBlur = this.handleBlur.bind(this);
+        }
+
+        handleFocus(event) {
+            event.target.select();
+        }
+
+        handleBlur(event) {
+            this.setState({ editing: false });
+            if (this.props.onUpdate != undefined)
+            {
+                this.props.onUpdate(this.props.id,this.state.value,this.props.field);
+            }
         }
 
         handleClick(event) {
@@ -548,7 +562,11 @@ var fintools = (function() {
             return (
                 e('div',{className:'edittext'},
                     (this.state.editing) ? 
-                        e('input',{type:'text', style: {width:this.width}, value: this.state.value, onChange:this.handleChange.bind(this)}) : 
+                        e('input',{type:'text', style: {width:this.width}, 
+                            value: this.state.value, 
+                            onChange:this.handleChange.bind(this), 
+                            onFocus:this.handleFocus.bind(this),
+                            onBlur:this.handleBlur.bind(this)}) : 
                         e('span',{ style: {display:'inline-block', 'vertical-align':'middle','text-align':this.props.align, overflow:'hidden', width:this.width}},this.props.value),
                         e('span',{className:'oi oi-pencil editpencil', onClick:this.handleClick.bind(this)})
                 )
