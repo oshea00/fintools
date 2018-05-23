@@ -280,6 +280,7 @@ var fintools = (function() {
             this.removeAsset = this.removeAsset.bind(this);
             this.saveAssets = this.saveAssets.bind(this);
             this.onUpdate = this.onUpdate.bind(this);
+            this.rebalancePortfolio = this.rebalancePortfolio.bind(this);
         }
 
         reprice() {
@@ -436,6 +437,10 @@ var fintools = (function() {
             }));
         }
 
+        rebalancePortfolio() {
+            alert('rebalancing');
+        }
+
         render() {
             return (
                 e('div',{className:'portfolio'},
@@ -450,12 +455,16 @@ var fintools = (function() {
                     onUpdate: this.onUpdate.bind(this)
                 }),
                 (this.props.saveLocal === false) ?
-                e('button',{type:'button', className: 'btn btn-primary savePortfolio',
+                e('button',{type:'button', className: 'btn btn-primary portfolioButton',
                     onClick: this.saveAssets.bind(this)
                     },'Save Portfolio') : 
-                e('button',{type:'button', className: 'btn btn-primary savePortfolio',
+                e('button',{type:'button', className: 'btn btn-primary portfolioButton',
                 onClick: this.saveAssets.bind(this)
-                },'Save Watchlist'),                
+                },'Save Watchlist'),
+                (this.props.allowRebalance) ?
+                e('button',{type:'button', className: 'btn btn-primary portfolioButton',
+                onClick: this.rebalancePortfolio.bind(this)
+                },'Rebalance') : null,
                 )
             );
         }

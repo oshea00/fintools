@@ -208,8 +208,9 @@ ul {
     margin-top: 20px;
 }
 
-.savePortfolio {
+.portfolioButton {
     margin-top: 10px;
+    margin-right: 10px;
 }
 
 .assetDescription {

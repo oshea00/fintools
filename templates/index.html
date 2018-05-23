@@ -22,8 +22,9 @@
         urlLoad:`{{ url_for('load_portfolio') }}`,
         saveLocal: true,
         watchlist: assets,
-        showWeights: false,
+        showWeights: true,
         reprice: true,
+        allowRebalance: false,
     }),
     document.getElementById('portfoliomgr'));
 </script>
