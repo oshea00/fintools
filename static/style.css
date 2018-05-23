@@ -240,4 +240,13 @@ a.assetUrl:hover {
     font-size: 10pt;
 }
 
-
+@keyframes strobeGreenOff {
+    0% {background-color: #d2dbe2;}
+    50% {background-color: green;}
+    100% {background-color: #d2dbe2;}
+}
+@keyframes strobeGreenOn {
+    0% {background-color: #d2dbe2;}
+    50% {background-color: green;}
+    100% {background-color: #d2dbe2;}
+}

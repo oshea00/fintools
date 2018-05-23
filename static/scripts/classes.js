@@ -163,13 +163,16 @@ var fintools = (function() {
                     (this.props.showWeights) ?
                     e('tr',{style:{'background-color':'#d2dbe2'}},
                             e('td',{colspan:1},'Balance:'),
-                            e('td',{colspan:6},this.totalBalance()),
+                            e('td',{colspan:6,
+                                },e(AnnounceStrobe,{value:this.totalBalance()})),
                             e('td',{colspan:2},this.totalWeights())
                         ) 
                         : 
                     e('tr',{style:{'background-color':'#d2dbe2'}},
                             e('td',{colspan:1},'Balance:'),
-                            e('td',{colspan:7},this.totalBalance()))
+                            e('td',{colspan:7,
+                                },e(AnnounceStrobe,{value:this.totalBalance()}))
+                        )
                 )),
                 assets.map((asset)=>{
                     return (
@@ -452,7 +455,7 @@ var fintools = (function() {
             }
             var reqdata = {
                 minbal: minbal,
-                maxbal: minbal+500.00,
+                maxbal: minbal,
                 tol: 0.01,
                 ax: assets.map(a=>parseFloat(a.weight)/100.0),
                 px: assets.map(a=>a.lastPrice)
@@ -497,6 +500,26 @@ var fintools = (function() {
                 )
             );
         }
+    }
+
+    class AnnounceStrobe extends React.Component {
+        constructor(props) {
+            super(props);
+            this.isOn = true;
+        }
+
+        componentDidUpdate() {
+            this.isOn = !this.isOn;
+        }
+
+        render() {
+            return (
+                (this.isOn) ?
+                e('span',{style:{'animation-name':'strobeGreenOff','animation-duration':'2s'}},this.props.value)
+                : 
+                e('span',{style:{'animation-name':'strobeGreenOn','animation-duration':'2s'}},this.props.value)
+            );
+        } 
     }
 
     class EditText extends React.Component {
