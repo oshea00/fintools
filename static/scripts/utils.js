@@ -53,7 +53,8 @@ var utils = (function() {
 
     function isMarketOpen()
     {
-        return (Date.today() >= utils.openTime() && Date.today() <= utils.closeTime());
+        var now = new Date()
+        return (now >= utils.openTime() && now <= utils.closeTime());
     }
 
     return {
