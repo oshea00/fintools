@@ -274,16 +274,60 @@ var fintools = (function() {
         }
     }
 
+    class TradeView extends React.Component {
+        constructor(props) {
+            super(props);
+        }
+
+        render() {
+            var trades = this.props.trades;
+            if (trades.length == 0)
+                return null;
+            return (
+                e('div',null,
+                e('h4',null,'Rebalance Trades'),
+                e('table',{className:'tradeTable table-striped'},
+                    e('thead',null,
+                        e('tr',null,
+                            e('td',null,"Order"),
+                            e('td',null,"Symbol"),
+                            e('td',null,"Quantity"),
+                            e('td',null,"Amount")
+                        )
+                    ),
+                    e('tbody',null,
+                        trades.map(t=>{
+                            return (
+                                e('tr',null,
+                                    e('td',null,t.type),
+                                    e('td',null,t.symbol),
+                                    e('td',null,t.qty),
+                                    e('td',{style:{'text-align':'right'}},t.amount)
+                                )
+                            );
+                        })
+                    )
+                ),
+                e('button',{className:"btn btn-primary portfolioButton",
+                    onClick: this.props.onApplyTrades.bind(this)},'Apply Trades'),
+                e('button',{className:"btn btn-primary portfolioButton",
+                onClick: this.props.onCancelTrades.bind(this)},'Cancel')                
+            ));
+        }
+    }
+
     class PortfolioManager extends React.Component {
         constructor(props) {
             super(props);
             this.repriceDelay = this.props.repriceDelay || 10000;
-            this.state = { assets: [], message: "" };
+            this.state = { assets: [], trades: [], message: "" };
             this.addAsset = this.addAsset.bind(this);
             this.removeAsset = this.removeAsset.bind(this);
             this.saveAssets = this.saveAssets.bind(this);
             this.onUpdate = this.onUpdate.bind(this);
             this.rebalancePortfolio = this.rebalancePortfolio.bind(this);
+            this.applyTrades = this.applyTrades.bind(this);
+            this.cancelRebalance = this.cancelRebalance.bind(this);
         }
 
         reprice() {
@@ -470,9 +514,85 @@ var fintools = (function() {
                     var positions = res.data.positions;
                     var result = res.data.result;
                     var message = res.data.message;
-                    currAssets.forEach((a,i)=>a.shares = positions[i]);
-                    this.setState({assets:currAssets});
+                    // We have new (positions) and old (currAssets) - let's turn them
+                    // into trades and allow the tradeview component to render them for 
+                    // review/application
+                    var trades = this.proposeTrades(currAssets,res.data.positions);
+                    this.setState({assets:currAssets,trades:trades});
                 });
+        }
+
+        applyTrades() {
+            var currAssets = [];
+            this.state.assets.forEach((a)=>{currAssets.push(Object.assign({},a))});
+            var trades = this.state.trades;
+            currAssets.forEach((a,i)=>{
+                var trade = trades.filter(t=>t.symbol == a.ticker);
+                if (trade.length>0)
+                {
+                    switch (trade[0].type)
+                    {
+                        case "buy": 
+                            a.shares = a.shares + trade[0].qty;
+                            break;
+                        case "sell": 
+                            a.shares = a.shares - trade[0].qty;
+                        break;
+                    }
+                }
+            });
+            trades = [];
+            this.setState({assets:currAssets,trades:trades});            
+        }
+
+        proposeTrades(currAssets,positions) {
+            var trades = [];
+            currAssets.forEach((a,i)=>{
+                if (positions[i]>0)
+                {
+                    if (a.shares < positions[i]) {
+                        if (Math.abs(positions[i]-a.shares)>Number.EPSILON){
+                            trades.push(
+                                {
+                                    type: "buy",
+                                    symbol: a.ticker,
+                                    qty: positions[i]-a.shares,
+                                    amount: (a.lastPrice * (positions[i]-a.shares)).toFixed(2)
+                                }
+                            );
+                            }
+                    } else {
+                        if (Math.abs(a.shares-positions[i])>Number.EPSILON){
+                            trades.push(
+                                {
+                                    type: "sell",
+                                    symbol: a.ticker,
+                                    qty: a.shares-positions[i],
+                                    amount: (a.lastPrice * (a.shares-positions[i])).toFixed(2)
+                                }
+                            );
+                        }
+                    }
+                }
+            });
+            trades.sort((a,b)=>{
+                if (a.type==b.type) {
+                    return 0;
+                }
+                else {
+                    if (a.type === 'sell' && b.type == 'buy'){
+                        return -1;
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+            })
+            return trades;
+        }
+
+        cancelRebalance() {
+            this.setState({trades:[]});
         }
 
         render() {
@@ -499,7 +619,11 @@ var fintools = (function() {
                 e('button',{type:'button', className: 'btn btn-primary portfolioButton',
                 onClick: this.rebalancePortfolio.bind(this)
                 },'Rebalance') : null,
-                e('span',null,this.state.message)
+                e('span',null,this.state.message),
+                e(TradeView,{trades: this.state.trades, 
+                    onApplyTrades: this.applyTrades.bind(this),
+                    onCancelTrades: this.cancelRebalance.bind(this)
+                })
                 )
             );
         }
