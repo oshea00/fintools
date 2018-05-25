@@ -150,13 +150,13 @@ var fintools = (function() {
                                 ),
                                 e('td',null,asset.issueType),
                                 e('td',null,asset.sector),
-                                e('td',null,parseFloat(asset.lastPrice).toFixed(2)),
+                                e('td',{style:{'text-align':'right'}},parseFloat(asset.lastPrice).toFixed(2)),
                                 e('td',null,
                                 e(EditText,{value:asset.shares, width:65, align:'right', id:asset.ticker, field:'shares', onUpdate: this.props.onUpdate })),
                                 (this.props.showWeights) ?
                                 e('td',null,
                                 e(EditText,{value:asset.weight, width:65, align:'right', id:asset.ticker, field:'weight', onUpdate: this.props.onUpdate })) : null,
-                                e('td',null,this.weightedBalance(asset.ticker))
+                                e('td',{style:{'text-align':'right'}},this.weightedBalance(asset.ticker))
                             ));
                         }
                     ),
