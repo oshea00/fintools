@@ -533,10 +533,10 @@ var fintools = (function() {
                     switch (trade[0].type)
                     {
                         case "buy": 
-                            a.shares = a.shares + trade[0].qty;
+                            a.shares = Number(a.shares) + Number(trade[0].qty);
                             break;
                         case "sell": 
-                            a.shares = a.shares - trade[0].qty;
+                            a.shares = Number(a.shares) - Number(trade[0].qty);
                         break;
                     }
                 }
