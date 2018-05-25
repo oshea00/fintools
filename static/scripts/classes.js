@@ -285,7 +285,7 @@ var fintools = (function() {
                 return null;
             return (
                 e('div',null,
-                e('h4',null,'Rebalance Trades'),
+                e('h4',null,'Proposed Trades'),
                 e('table',{className:'tradeTable table-striped'},
                     e('thead',null,
                         e('tr',null,
@@ -481,7 +481,6 @@ var fintools = (function() {
         }
 
         removeAsset(ticker) {
-            // updates asset array - at some point we'll update db on another user control input
             this.setState((prevState,props)=> ({
                 assets: prevState.assets.filter((a)=>{ return a.ticker != ticker })
             }));
@@ -542,33 +541,40 @@ var fintools = (function() {
             this.setState({assets:currAssets,trades:trades});            
         }
 
+        makeTrade(ticker,currPosition,newPosition,currPrice) {
+            if (Math.abs(newPosition-currPosition)>Number.EPSILON) {
+                if (currPosition < newPosition){
+                    return (
+                        {
+                            type: "buy",
+                            symbol: ticker,
+                            qty: newPosition-currPosition,
+                            amount: (currPrice * (newPosition-currPosition)).toFixed(2)
+                        }  
+                    );
+                } else                   
+                if (currPosition > newPosition){
+                    return (
+                        {
+                            type: "sell",
+                            symbol: ticker,
+                            qty: currPosition-newPosition,
+                            amount: (currPrice * (currPosition-newPosition)).toFixed(2)
+                        }
+                    );
+                }
+            }
+            return { type: "none" };
+        }
+
         proposeTrades(currAssets,positions) {
             var trades = [];
             currAssets.forEach((a,i)=>{
                 if (positions[i]>0)
                 {
-                    if (a.shares < positions[i]) {
-                        if (Math.abs(positions[i]-a.shares)>Number.EPSILON){
-                            trades.push(
-                                {
-                                    type: "buy",
-                                    symbol: a.ticker,
-                                    qty: positions[i]-a.shares,
-                                    amount: (a.lastPrice * (positions[i]-a.shares)).toFixed(2)
-                                }
-                            );
-                            }
-                    } else {
-                        if (Math.abs(a.shares-positions[i])>Number.EPSILON){
-                            trades.push(
-                                {
-                                    type: "sell",
-                                    symbol: a.ticker,
-                                    qty: a.shares-positions[i],
-                                    amount: (a.lastPrice * (a.shares-positions[i])).toFixed(2)
-                                }
-                            );
-                        }
+                    var trade = this.makeTrade(a.ticker,a.shares,positions[i],a.lastPrice);
+                    if (trade.type != "none") {
+                        trades.push(trade);
                     }
                 }
             });
