@@ -390,14 +390,11 @@ def rebalance(minbal,maxbal,ax,px,tol):
     bounds = [(mintrade,maxtrade)]*len(x0)
     cons = [
             dict(type='ineq',fun=lambda x: maxbal - px.dot(x)),
-            dict(type='ineq',fun=lambda x: px.dot(x) - minbal)]
-    cons.extend(
-        [dict(
-            type='ineq',
-            fun=lambda x: targetTol - np.abs(ax[i]-(px*x/px.dot(x))[i])) 
-         for i in range(len(x0))])
+            dict(type='ineq',fun=lambda x: px.dot(x) - minbal),
+            dict(type='ineq',fun=lambda x: tol - np.std(ax - px*x/px.dot(x)))]
     def targetoffset(x):
         w = px*x/px.dot(x)
         return np.sum(np.abs(ax-w))
     result = minimize(targetoffset, x0, constraints=cons, bounds=bounds, method='SLSQP')
     return result.success, np.round(result.x), result.message
+

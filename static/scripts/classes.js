@@ -395,7 +395,7 @@ var fintools = (function() {
                                 weight: '0.0%',
                                 ticker: ticker,
                                 lastPrice: price,
-                                shares: '1',
+                                shares: 1,
                                 exchange: asset.exchange,
                                 description: asset.description,
                                 website: asset.website,
@@ -514,9 +514,6 @@ var fintools = (function() {
                     var positions = res.data.positions;
                     var result = res.data.result;
                     var message = res.data.message;
-                    // We have new (positions) and old (currAssets) - let's turn them
-                    // into trades and allow the tradeview component to render them for 
-                    // review/application
                     var trades = this.proposeTrades(currAssets,res.data.positions);
                     this.setState({assets:currAssets,trades:trades});
                 });
