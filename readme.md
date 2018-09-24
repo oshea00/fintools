@@ -19,3 +19,5 @@ Stock picker, name and/or symbol serach. Company information.
 
 ![Research](https://raw.githubusercontent.com/oshea00/fintools/master/static/images/research.png)
 
+![Rebalancing](https://raw.githubusercontent.com/oshea00/fintools/master/static/images/rebalance.png)
+
