@@ -1,16 +1,14 @@
 # Finance Tools
 ## Asset Allocation
-Maintaining a portfolio to target certain allocation targets. Including the ability to re-balance the portfolio to targets and generating optimal trades to achieve current or revised targets.
+Maintaining a portfolio to target certain allocation targets. Including the ability to re-balance the portfolio to targets and generate optimal trades to achieve current or revised target allocations.
 ### Rebalancing Methodology
-When rebalancing the portolfio, the beginning and ending portoflio balance should be within a min/max balance range/percentage. Also, the total deviation of target vs actual weights after should not exceed a desride tolerance. To achieve this, the current allocations, prices, and target weights are passed to an optimizer which is given these constraints. The optimizer chooses the best set of whole asset trades which meets the target weights. Currently, this does not take cash into account, or allow leverage in trades (synthetic cash).
-
+When rebalancing the portolfio, the beginning and ending portoflio balance should be within a min/max balance range/percentage. Also, the total deviation of target vs actual weights after rebalancing should not exceed a desired tolerance. To achieve this, the current allocations, prices, and target weights are passed to an optimizer which is given these constraints. The optimizer chooses the best set of whole asset trades which approaches the target weights. Currently, this does not take cash into account, or allow leverage in trades (synthetic cash). Tolerances are currently fixed at +/- 1%.
 ## Asset Correlation
-Shows how to compare assets to determine correlation in price movements. Normally, a portfolio manager wants assets that are not highly correlated.
+Shows how to compare assets to determine correlation in price movements. Normally, a portfolio manager wants assets that are not highly correlated in order to reduce market risk.
 ## Efficient Frontier
-Use monte-carlo analysis to determine risk adjusted returns for various asset allocations. The goal is to show allocations which provide the most return for the chosen risk (variance in returns).
+Use Monte Carlo analysis to determine risk adjusted returns for randomly selected asset allocations. The goal is to show allocations which provide the most return for the chosen risk (variance in returns).
 ## Research
 Stock picker, name and/or symbol serach. Company information.
-
 ## Screen Shots
 [Fintools Home](https://futurtrends-fintools.herokuapp.com/)
 
