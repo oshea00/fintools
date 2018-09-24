@@ -8,7 +8,7 @@ Shows how to compare assets to determine correlation in price movements. Normall
 ## Efficient Frontier
 Use Monte Carlo analysis to determine risk adjusted returns for randomly selected asset allocations. The goal is to show allocations which provide the most return for the chosen risk (variance in returns).
 ## Research
-Stock picker, name and/or symbol serach. Company information.
+Stock picker, name and/or symbol search. Company information.
 ## Screen Shots
 [Fintools Home](https://futurtrends-fintools.herokuapp.com/)
 
