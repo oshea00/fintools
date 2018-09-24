@@ -1,6 +1,9 @@
 # Finance Tools
 ## Asset Allocation
 Maintaining a portfolio to target certain allocation targets. Including the ability to re-balance the portfolio to targets and generating optimal trades to achieve current or revised targets.
+### Rebalancing Methodology
+When rebalancing the portolfio, the beginning and ending portoflio balance should be within a min/max balance range/percentage. Also, the total deviation of target vs actual weights after should not exceed a desride tolerance. To achieve this, the current allocations, prices, and target weights are passed to an optimizer which is given these constraints. The optimizer chooses the best set of whole asset trades which meets the target weights. Currently, this does not take cash into account, or allow leverage in trades (synthetic cash).
+
 ## Asset Correlation
 Shows how to compare assets to determine correlation in price movements. Normally, a portfolio manager wants assets that are not highly correlated.
 ## Efficient Frontier
