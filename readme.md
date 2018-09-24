@@ -7,7 +7,6 @@ Shows how to compare assets to determine correlation in price movements. Normall
 Use monte-carlo analysis to determine risk adjusted returns for various asset allocations. The goal is to show allocations which provide the most return for the chosen risk (variance in returns).
 
 ## Screen Shots
-![Home Page]
-(https://raw.githubusercontent.com/oshea00/fintools/master/static/images/home.png)
+![Home Page](https://raw.githubusercontent.com/oshea00/fintools/master/static/images/home.png)
 oshea00/fintools/blob/master/static/images/home.png
 
