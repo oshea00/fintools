@@ -6,7 +6,7 @@ When rebalancing the portolfio, the beginning and ending portoflio balance shoul
 ## Asset Correlation
 Shows how to compare assets to determine correlation in price movements. Normally, a portfolio manager wants assets that are not highly correlated in order to reduce market risk.
 ## Efficient Frontier
-Use Monte Carlo analysis to determine risk adjusted returns for randomly selected asset allocations. The goal is to show allocations which provide the most return for the chosen risk (variance in returns).
+Use Monte Carlo analysis to determine risk adjusted returns for randomly selected asset allocations. The goal is to show (retroactively) allocations which provided the most return for a desired risk level.
 ## Research
 Stock picker, name and/or symbol search. Company information.
 ## Screen Shots
