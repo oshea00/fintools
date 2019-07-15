@@ -121,7 +121,7 @@ def frontierPlot(vol_arr,ret_arr,sharpe_arr,height,width,max_sr_vol,max_sr_ret,o
         y = ret_arr,
         mode='markers',
         marker=dict(
-            size='8',
+            size=8,
             color = sharpe_arr, #set color equal to a variable
             colorscale='Portland',
             colorbar = dict(title='Sharpe Ratio'),
