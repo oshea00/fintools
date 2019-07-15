@@ -2,10 +2,9 @@
     class StockList extends React.Component {
         constructor(props) {
             super(props);
-            this.handleClick = this.handleClick.bind(this);
         }
 
-        handleClick(event) {
+        handleClick = (event) => {
             const ticker = event.target.value;
             axios.get(`https://cloud.iexapis.com/stable/stock/${ticker}/price?token=${IEXTOKEN}`)
             .then(res => {
@@ -20,30 +19,36 @@
             if (symbols.length==0)
                 return null;
             return (
-                e('table',{className:'assetList table-striped'},
-                    e('thead',null,
-                    e('tr',null,
-                        e('th',null,''),
-                        e('th',null,'Ticker'),
-                        e('th',null,'30 Day'),
-                        e('th',null,'Company')
-                    )),
-                    e('tbody',null,
-                    symbols.map(
+                <table className='assetList table-striped'>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Ticker</th>
+                            <th>30 Day</th>
+                            <th>Company</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {symbols.map(
                         (s) => {
                             return (
-                                e('tr',null,
-                                    e('td',null,e('button',{type:'button',className:'btn btn-link oi oi-plus',value:s.ticker,
-                                        onClick: this.handleClick.bind(this)})),
-                                        e('td',null,s.ticker),
-                                        e('td',null,
-                                            e('span',{className:'sparklines',values:getChartValues(s.chart,'close')}),
-                                        ),
-                                        e('td',null,s.name)
-                                ));
+                                <tr>
+                                    <td>
+                                        <button className='btn btn-link oi oi-plus' 
+                                                value={s.ticker} 
+                                                onClick={this.handleClick}/>
+                                    </td>
+                                    <td>{s.ticker}</td>
+                                    <td>
+                                        <span className='sparklines' values={getChartValues(s.chart,'close')}></span>
+                                    </td>
+                                    <td>{s.name}</td>
+                                </tr>
+                            );
                         }
-                    ))      
-                )
+                    )}
+                    </tbody>      
+                </table>
             );
         }
     }
@@ -71,10 +76,9 @@
     class PortfolioView extends React.Component {
         constructor(props) {
             super(props);
-            this.handleClick = this.handleClick.bind(this);
         }
 
-        handleClick(event) {
+        handleClick = (event) => {
             this.props.removeAsset(event.target.value);
         }
 
@@ -112,93 +116,110 @@
             return ((tickerTotal/bal)*100).toFixed(1)+'%';
         }
 
+        renderTableRow = asset => {
+            return (
+                <tr key={asset.ticker}>
+                    <td>
+                        <button className='btn btn-link oi oi-x' value={asset.ticker}
+                            onClick={this.handleClick}></button>
+                    </td>
+                    <td>
+                        <button className='btn btn-link'
+                          data-toggle='modal'
+                          data-target={'#companyinfo'+asset.ticker}>{asset.ticker}</button>
+                    </td>
+                    <td>
+                        <span className='sparklines' values={getChartValues(asset.chart,'close')}></span>
+                    </td>
+                    <td>{asset.issueType}</td>
+                    <td>{asset.sector}</td>
+                    <td style={{'textAlign':'right'}}>{parseFloat(asset.lastPrice).toFixed(2)}</td>
+                    <td><EditText value={asset.shares} width={65} align='right' id={asset.ticker} field='shares' onUpdate={this.props.onUpdate}/></td>
+                    <td>
+                        {this.props.showWeights ?
+                            <EditText value={asset.weight} width={65} align='right' id={asset.ticker} field='weight' onUpdate={this.props.onUpdate}/>
+                            : null
+                        }
+                    </td>
+                    <td style={{'textAlign':'right'}}>{this.weightedBalance(asset.ticker)}</td>
+                </tr>
+            );
+        }
+
+        renderTableRowCompanyInfoPopup = asset => {
+            return (
+                <div className='modal fade' key={asset.ticker} id={'companyinfo'+asset.ticker} tabIndex={-1}>
+                    <div className='modal-dialog modal-dialog-centered'>
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h5 className='modal-title'>{asset.companyName}</h5>
+                                <button type='button' className='close' data-dismiss='modal'>{'\u00d7'}</button>
+                            </div>
+                            <div className='modal-body'>
+                                <div className='assetCEO'>{'CEO: '+asset.ceo}</div>
+                                <div>{asset.exchange}</div>
+                                <div>{'Industry: '+asset.industry}</div>
+                                <div>
+                                    <span>
+                                       Homepage: <a className='assetUrl' target='_blank' href={asset.website}>{asset.website}</a>
+                                    </span>
+                                </div>
+                                <div className='assetDescription'>
+                                    {asset.description}
+                                </div>
+                            </div>
+                            <div className='modal-footer'>
+                                <button className='btn btn-secondary' data-dismiss='modal'>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        renderTableFooter = () => {
+            return (
+                (this.props.showWeights) ?
+                <tr style={{'backgroundColor':'#d2dbe2'}}>
+                    <td colSpan='1'>Balance:</td>
+                    <td colSpan='6'><AnnounceStrobe value={this.totalBalance()}/></td>
+                    <td colSpan='2'>{this.totalWeights()}</td>
+                </tr> 
+                    : 
+                    <tr style={{'backgroundColor':'#d2dbe2'}}>
+                    <td colSpan='1'>Balance:</td>
+                    <td colSpan='7'><AnnounceStrobe value={this.totalBalance()}/></td>
+                </tr> 
+            );
+        }
+
         render() {
             const assets = this.props.assets;
             return (
                 (assets.length > 0) ?
-                e('div',null,
-                e('table',{className:'portfolioTable table-striped'},
-                    e('thead',null,
-                    e('tr',null,
-                        e('th',null,''),
-                        e('th',null,'Symbol'),
-                        e('th',null,'30 Days'),
-                        e('th',null,'Type'),
-                        e('th',null,'Sector'),
-                        e('th',null,'Price'),
-                        e('th',null,'Shares'),
-                        (this.props.showWeights) ?
-                        e('th',null,'Target') : null,
-                        e('th',null,'Weight'),
-                    )),
-                    e('tbody',null,
-                    assets.map(
-                        (asset) => {
-                            return (
-                                e('tr',{key: asset.ticker},
-                                e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link oi oi-x',
-                                   onClick: this.handleClick.bind(this)})),
-                                e('td',null,
-                                    e('button',{type:'button',
-                                        className:'btn btn-link',
-                                        'data-toggle':'modal',
-                                        'data-target':'#companyinfo'+asset.ticker},asset.ticker)),
-                                e('td',null,
-                                    e('span',{className:'sparklines',values:getChartValues(asset.chart,'close')}),
-                                ),
-                                e('td',null,asset.issueType),
-                                e('td',null,asset.sector),
-                                e('td',{style:{'textAlign':'right'}},parseFloat(asset.lastPrice).toFixed(2)),
-                                e('td',null,
-                                e(EditText,{value:asset.shares, width:65, align:'right', id:asset.ticker, field:'shares', onUpdate: this.props.onUpdate })),
-                                (this.props.showWeights) ?
-                                e('td',null,
-                                e(EditText,{value:asset.weight, width:65, align:'right', id:asset.ticker, field:'weight', onUpdate: this.props.onUpdate })) : null,
-                                e('td',{style:{'textAlign':'right'}},this.weightedBalance(asset.ticker))
-                            ));
-                        }
-                    ),
-                    (this.props.showWeights) ?
-                    e('tr',{style:{'backgroundColor':'#d2dbe2'}},
-                            e('td',{colSpan:1},'Balance:'),
-                            e('td',{colSpan:6,
-                                },e(AnnounceStrobe,{value:this.totalBalance()})),
-                            e('td',{colSpan:2},this.totalWeights())
-                        ) 
-                        : 
-                    e('tr',{style:{'backgroundColor':'#d2dbe2'}},
-                            e('td',{colSpan:1},'Balance:'),
-                            e('td',{colSpan:7,
-                                },e(AnnounceStrobe,{value:this.totalBalance()}))
-                        )
-                )),
-                assets.map((asset)=>{
-                    return (
-                        e('div',{className:'modal fade', key:asset.ticker, id:'companyinfo'+asset.ticker,tabIndex:-1},
-                            e('div',{className:'modal-dialog modal-dialog-centered'},
-                                e('div',{className:'modal-content'},
-                                    e('div',{className:'modal-header'},
-                                        e('h5',{className:'modal-title'},asset.companyName),
-                                        e('button',{type:'button',className:'close','data-dismiss':'modal'},'\u00d7')),
-                                    e('div',{className:'modal-body'},
-                                        e('div',{className:'assetCEO'},'CEO: '+asset.ceo),
-                                        e('div',null,'Exchange: '+asset.exchange),
-                                        e('div',null,'Industry: '+asset.industry),
-                                        e('div',null,
-                                            e('span',null,'Homepage: ',e('a',{className:'assetUrl',target:'_blank',href:asset.website},asset.website))
-                                        ),
-                                        e('div',{className:'assetDescription'},asset.description),
-
-                                    ),
-                                    e('div',{className:'modal-footer'},
-                                        e('button',{className:'btn btn-secondary','data-dismiss':'modal'},'Close')
-                                    )
-                                )
-                            )
-                        )
-                    );
-                }),
-            ) : null)
+                <div>
+                    <table className='portfolioTable table-striped'>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Symbol</th>
+                            <th>30 Days</th>
+                            <th>Type</th>
+                            <th>Sector</th>
+                            <th>Price</th>
+                            <th>Shares</th>
+                            {(this.props.showWeights) ? <th>Target</th> : null}
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {assets.map(asset=>this.renderTableRow(asset))}
+                        {this.renderTableFooter()}
+                    </tbody>
+                    </table>
+                    {assets.map(asset=>this.renderTableRowCompanyInfoPopup(asset))}
+                </div> 
+                : null);
         }
     }
 
@@ -206,12 +227,9 @@
         constructor(props) {
             super(props);
             this.state = { symbols: [], charts: [], search: ''};
-            this.handleClick = this.handleClick.bind(this);        
-            this.handleChange = this.handleChange.bind(this);        
-            this.handleOnFocus = this.handleOnFocus.bind(this);
         }
 
-        handleClick(event) {
+        handleClick = (event) => {
             const srch = this.state.search;
             axios.get(this.props.url,{ params: { search: srch} })
             .then(res => {
@@ -241,11 +259,11 @@
             $('.sparklines').sparkline('html', { enableTagOptions: true });
         }
 
-        handleChange(event) {
+        handleChange = (event) => {
             this.setState({search: event.target.value});
         }
 
-        handleOnFocus(event) {
+        handleOnFocus = (event) => {
             this.setState({search: ''});
             this.setState({charts: []})
             this.setState({symbols: []})
@@ -253,22 +271,21 @@
 
         render() {
             return (
-                e('div',null,
-                e('h4',null,'Stock Picker'),
-                e('form',{className:'form-inline'},
-                    e('input',{type:'text', className: 'form-control', placeholder:'Name or Ticker',
-                        value: this.state.search, 
-                        onChange: this.handleChange.bind(this),
-                        onFocus: this.handleOnFocus.bind(this)
-                    }),
-                    e('button',{type: 'button', className: "btn btn-primary", 
-                        onClick: this.handleClick.bind(this)},'Lookup')
-                ),
-                (this.state.symbols.length > 10) ? 
-                    e('span',null,'Limited to 20 results. You may want to narrow search.') : null,
-                (this.state.symbols.length > 0) ? 
-                    e(StockList,{symbols:this.state.symbols,charts: this.state.charts, addAsset: this.props.addAsset }) : null
-            ));
+                <div>
+                    <h4>Stock Picker</h4>
+                    <form className='form-inline'>
+                        <input className='form-control' 
+                               placeholder='Name or Ticker'
+                               value={this.state.search}
+                               onChange={this.handleChange}
+                               onFocus={this.handleOnFocus}
+                        />
+                        <button className='btn btn-primary' onClick={this.handleClick}>Lookup</button>
+                    </form>
+                    {(this.state.symbols.length > 10) ? <span>'Limited to 20 results. You may want to narrow search.'</span> : null}
+                    {(this.state.symbols.length > 0) ? <StockList symbols={this.state.symbols} charts={this.state.charts} addAsset={this.props.addAsset}/> : null}
+                </div>
+            );
         }
     }
 
