@@ -299,35 +299,34 @@
             if (trades.length == 0)
                 return null;
             return (
-                e('div',null,
-                e('h4',null,'Proposed Trades'),
-                e('table',{className:'tradeTable table-striped'},
-                    e('thead',null,
-                        e('tr',null,
-                            e('td',null,"Order"),
-                            e('td',null,"Symbol"),
-                            e('td',null,"Quantity"),
-                            e('td',null,"Amount")
-                        )
-                    ),
-                    e('tbody',null,
-                        trades.map(t=>{
+                <div>
+                    <h4>Proposed Trades</h4>
+                    <table className='tradeTable table-striped'>
+                        <thead>
+                            <tr>
+                                <td>Order</td>
+                                <td>Symbol</td>
+                                <td>Quantity</td>
+                                <td>Amount</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {trades.map(t=>{
                             return (
-                                e('tr',null,
-                                    e('td',null,t.type),
-                                    e('td',null,t.symbol),
-                                    e('td',null,t.qty),
-                                    e('td',{style:{'textAlign':'right'}},t.amount)
-                                )
+                                <tr>
+                                    <td>{t.type}</td>
+                                    <td>{t.symbol}</td>
+                                    <td>{t.qty}</td>
+                                    <td style={{'textAlign':'right'}}>{t.amount}</td>
+                                </tr>
                             );
-                        })
-                    )
-                ),
-                e('button',{className:"btn btn-primary portfolioButton",
-                    onClick: this.props.onApplyTrades.bind(this)},'Apply Trades'),
-                e('button',{className:"btn btn-primary portfolioButton",
-                onClick: this.props.onCancelTrades.bind(this)},'Cancel')                
-            ));
+                        })}
+                    </tbody>
+                    </table>
+                    <button className='btn btn-primary portfolioButton' onClick={this.props.onApplyTrades}>Apply Trades</button>
+                    <button className='btn btn-primary portfolioButton' onClick={this.props.onCancelTrades}>Cancel Trades</button>
+                </div>
+            );
         }
     }
 
@@ -336,13 +335,6 @@
             super(props);
             this.repriceDelay = this.props.repriceDelay || 10000;
             this.state = { assets: [], trades: [], message: "" };
-            this.addAsset = this.addAsset.bind(this);
-            this.removeAsset = this.removeAsset.bind(this);
-            this.saveAssets = this.saveAssets.bind(this);
-            this.onUpdate = this.onUpdate.bind(this);
-            this.rebalancePortfolio = this.rebalancePortfolio.bind(this);
-            this.applyTrades = this.applyTrades.bind(this);
-            this.cancelRebalance = this.cancelRebalance.bind(this);
         }
 
         reprice() {
@@ -387,7 +379,7 @@
                 })
         }
 
-        addAsset (event) {
+        addAsset = (event) => {
             // prevent duplicates being added
             if (this.state.assets.filter(a=>{return a.ticker == event.ticker}).length>0)
                 return;
@@ -461,7 +453,7 @@
             $('.sparklines').sparkline('html', { enableTagOptions: true });
         }
 
-        onUpdate(ticker,value,field) {
+        onUpdate = (ticker,value,field) => {
             var currAssets = [];
             this.state.assets.forEach((a)=>{ currAssets.push(Object.assign({},a))});
             var w = parseFloat(value);
@@ -483,7 +475,7 @@
             this.setState({assets:currAssets});            
         }
 
-        saveAssets() {
+        saveAssets = () => {
             if (this.props.saveLocal === false) {
                 axios.put(this.props.urlSave,this.state.assets)
                 .catch((error)=>{
@@ -495,13 +487,13 @@
             }
         }
 
-        removeAsset(ticker) {
+        removeAsset = (ticker) => {
             this.setState((prevState,props)=> ({
                 assets: prevState.assets.filter((a)=>{ return a.ticker != ticker })
             }));
         }
 
-        rebalancePortfolio() {
+        rebalancePortfolio = () => {
             this.setState({ message: ""});
             var assets = this.state.assets;
             var minbal = assets.map(a=>a.lastPrice*a.shares).reduce((p,c)=>p+c);
@@ -533,7 +525,7 @@
                 });
         }
 
-        applyTrades() {
+        applyTrades = () => {
             var currAssets = [];
             this.state.assets.forEach((a)=>{currAssets.push(Object.assign({},a))});
             var trades = this.state.trades;
@@ -609,40 +601,32 @@
             return trades;
         }
 
-        cancelRebalance() {
+        cancelRebalance = () => {
             this.setState({trades:[]});
         }
 
         render() {
             return (
-                e('div',{className:'portfolio'},
-                e(StockPicker,{url:this.props.url, addAsset: this.addAsset.bind(this)}),
-                (this.props.saveLocal === false) ?
-                e('h4',null,'Portfolio Assets') :
-                e('h4',null,'Watchlist'),
-                e(PortfolioView,{assets: this.state.assets, 
-                    removeAsset: this.removeAsset.bind(this),
-                    saveAssets: this.saveAssets.bind(this),
-                    showWeights: this.props.showWeights,
-                    onUpdate: this.onUpdate.bind(this)
-                }),
-                (this.props.saveLocal === false) ?
-                e('button',{type:'button', className: 'btn btn-primary portfolioButton',
-                    onClick: this.saveAssets.bind(this)
-                    },'Save Portfolio') : 
-                e('button',{type:'button', className: 'btn btn-primary portfolioButton',
-                onClick: this.saveAssets.bind(this)
-                },'Save Watchlist'),
-                (this.props.allowRebalance) ?
-                e('button',{type:'button', className: 'btn btn-primary portfolioButton',
-                onClick: this.rebalancePortfolio.bind(this)
-                },'Rebalance') : null,
-                e('span',null,this.state.message),
-                e(TradeView,{trades: this.state.trades, 
-                    onApplyTrades: this.applyTrades.bind(this),
-                    onCancelTrades: this.cancelRebalance.bind(this)
-                })
-                )
+                <div className='portfolio'>
+                    <StockPicker url={this.props.url} addAsset={this.addAsset}/>
+                    {(this.props.saveLocal === false) ? <h4>Portfolio Assets</h4> : <h4>Watchlist</h4>}
+                    <PortfolioView assets={this.state.assets}
+                        removeAsset={this.removeAsset}
+                        saveAssets={this.saveAssets}
+                        showWeights={this.props.showWeights}
+                        onUpdate={this.onUpdate}/>
+                    {(this.props.saveLocal === false) ?
+                    <button className='btn btn-primary portfolioButton' onClick={this.saveAssets}>Save Portfolio</button> :
+                    <button className='btn btn-primary portfolioButton' onClick={this.saveAssets}>Save Watchlist</button>}
+                    {(this.props.allowRebalance) ?
+                    <button className='btn btn-primary portfolioButton' onClick={this.rebalancePortfolio}>Rebalance</button> : null}
+                    <span>{this.state.message}</span>
+                    <TradeView 
+                        trades={this.state.trades}
+                        onApplyTrades={this.applyTrades}
+                        onCancelTrades={this.cancelRebalance}
+                    />
+                </div>                    
             );
         }
     }
@@ -677,17 +661,13 @@
             super(props);
             this.width = this.props.width || 150; 
             this.state = { editing: false, value: this.props.value };
-            this.handleClick = this.handleClick.bind(this);
-            this.handleChange = this.handleChange.bind(this);
-            this.handleFocus = this.handleFocus.bind(this);
-            this.handleBlur = this.handleBlur.bind(this);
         }
 
-        handleFocus(event) {
+        handleFocus = (event) => {
             event.target.select();
         }
 
-        handleBlur(event) {
+        handleBlur = (event) => {
             this.setState({ editing: false });
             if (this.props.onUpdate != undefined)
             {
@@ -695,7 +675,7 @@
             }
         }
 
-        handleClick(event) {
+        handleClick = (event) => {
             var editing = !this.state.editing;
             this.setState({ editing: editing });
             if (!editing && this.props.onUpdate != undefined)
@@ -704,7 +684,7 @@
             }
         }
 
-        handleChange(event) {
+        handleChange = (event) => {
             this.setState({value: event.target.value});
         }
         
@@ -718,17 +698,17 @@
                     overflow:'hidden', width:this.width}}>
                     {this.props.value}
                 </span>
-                <span className='oi oi-pencil editpencil' onClick={this.handleClick.bind(this)}></span>
+                <span className='oi oi-pencil editpencil' onClick={this.handleClick}></span>
             </div>;
             
             let edit = 
             <div className='edittext'>
                 <input type='text' style={{width:this.width}} 
                         value={this.state.value} 
-                        onChange={this.handleChange.bind(this)} 
-                        onFocus={this.handleFocus.bind(this)}
-                        onBlur={this.handleBlur.bind(this)}/>
-                <span className='oi oi-pencil editpencil' onClick={this.handleClick.bind(this)}></span>
+                        onChange={this.handleChange} 
+                        onFocus={this.handleFocus}
+                        onBlur={this.handleBlur}/>
+                <span className='oi oi-pencil editpencil' onClick={this.handleClick}></span>
             </div>
             return (editing) ? edit : notEditing;
         }
