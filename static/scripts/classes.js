@@ -230,6 +230,7 @@
         }
 
         handleClick = (event) => {
+            event.preventDefault();
             const srch = this.state.search;
             axios.get(this.props.url,{ params: { search: srch} })
             .then(res => {
@@ -333,11 +334,10 @@
     class PortfolioManager extends React.Component {
         constructor(props) {
             super(props);
-            this.repriceDelay = this.props.repriceDelay || 10000;
             this.state = { assets: [], trades: [], message: "" };
         }
 
-        reprice() {
+        reprice = () => {
             var promises = [];
             var currAssets =[];
             this.state.assets.forEach((a)=>{ currAssets.push(Object.assign({},a))});
@@ -441,7 +441,7 @@
                 this.setState({ assets: watchlist });
             }
             if (this.props.reprice) {
-                this.timerID = setInterval(()=>this.reprice(),this.repriceDelay);          
+                this.timerID = setInterval(()=>this.reprice(),this.props.repriceDelay);          
             }
         }
 
