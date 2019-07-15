@@ -137,7 +137,7 @@ var fintools = (function() {
                     assets.map(
                         (asset) => {
                             return (
-                                e('tr',null,
+                                e('tr',{key: asset.ticker},
                                 e('td',null,e('button',{type:'button', value: asset.ticker, className:'btn btn-link oi oi-x',
                                    onClick: this.handleClick.bind(this)})),
                                 e('td',null,
@@ -150,33 +150,33 @@ var fintools = (function() {
                                 ),
                                 e('td',null,asset.issueType),
                                 e('td',null,asset.sector),
-                                e('td',{style:{'text-align':'right'}},parseFloat(asset.lastPrice).toFixed(2)),
+                                e('td',{style:{'textAlign':'right'}},parseFloat(asset.lastPrice).toFixed(2)),
                                 e('td',null,
                                 e(EditText,{value:asset.shares, width:65, align:'right', id:asset.ticker, field:'shares', onUpdate: this.props.onUpdate })),
                                 (this.props.showWeights) ?
                                 e('td',null,
                                 e(EditText,{value:asset.weight, width:65, align:'right', id:asset.ticker, field:'weight', onUpdate: this.props.onUpdate })) : null,
-                                e('td',{style:{'text-align':'right'}},this.weightedBalance(asset.ticker))
+                                e('td',{style:{'textAlign':'right'}},this.weightedBalance(asset.ticker))
                             ));
                         }
                     ),
                     (this.props.showWeights) ?
-                    e('tr',{style:{'background-color':'#d2dbe2'}},
-                            e('td',{colspan:1},'Balance:'),
-                            e('td',{colspan:6,
+                    e('tr',{style:{'backgroundColor':'#d2dbe2'}},
+                            e('td',{colSpan:1},'Balance:'),
+                            e('td',{colSpan:6,
                                 },e(AnnounceStrobe,{value:this.totalBalance()})),
-                            e('td',{colspan:2},this.totalWeights())
+                            e('td',{colSpan:2},this.totalWeights())
                         ) 
                         : 
-                    e('tr',{style:{'background-color':'#d2dbe2'}},
-                            e('td',{colspan:1},'Balance:'),
-                            e('td',{colspan:7,
+                    e('tr',{style:{'backgroundColor':'#d2dbe2'}},
+                            e('td',{colSpan:1},'Balance:'),
+                            e('td',{colSpan:7,
                                 },e(AnnounceStrobe,{value:this.totalBalance()}))
                         )
                 )),
                 assets.map((asset)=>{
                     return (
-                        e('div',{className:'modal fade', id:'companyinfo'+asset.ticker,tabindex:-1},
+                        e('div',{className:'modal fade', key:asset.ticker, id:'companyinfo'+asset.ticker,tabIndex:-1},
                             e('div',{className:'modal-dialog modal-dialog-centered'},
                                 e('div',{className:'modal-content'},
                                     e('div',{className:'modal-header'},
@@ -302,7 +302,7 @@ var fintools = (function() {
                                     e('td',null,t.type),
                                     e('td',null,t.symbol),
                                     e('td',null,t.qty),
-                                    e('td',{style:{'text-align':'right'}},t.amount)
+                                    e('td',{style:{'textAlign':'right'}},t.amount)
                                 )
                             );
                         })
@@ -702,7 +702,8 @@ var fintools = (function() {
                             onChange:this.handleChange.bind(this), 
                             onFocus:this.handleFocus.bind(this),
                             onBlur:this.handleBlur.bind(this)}) : 
-                        e('span',{ style: {display:'inline-block', 'vertical-align':'middle','text-align':this.props.align, overflow:'hidden', width:this.width}},this.props.value),
+                        e('span',{ style: {display:'inline-block', 'verticalAlign':'middle','textAlign':this.props.align, overflow:'hidden', width:this.width}},this.props.value),
+//                        <span className='oi oi-pencil editpencil' onClick={this.handleClick.bind(this)}></span>
                         e('span',{className:'oi oi-pencil editpencil', onClick:this.handleClick.bind(this)})
                 )
             );
