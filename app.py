@@ -60,6 +60,7 @@ if __name__ !=  "__main__":
 app.logger.info("Logging...")
 
 DATABASE_URL = os.environ['DATABASE_URL']
+IEXTOKEN = os.environ['IEXTOKEN']
 
 try:
     conn = psycopg2.connect(DATABASE_URL)
@@ -254,6 +255,10 @@ def stock_chart(ticker):
 @app.route('/api/v1/symbols',methods=['GET'])
 def symbols():
     return json.dumps(stockdb.getSymbols(DATABASE_URL))
+
+@app.route('/api/v1/iex',methods=['GET'])
+def iextoken():
+    return IEXTOKEN
 
 @app.route('/api/v1/symbollookup',methods=['GET'])
 def symbol_lookup():

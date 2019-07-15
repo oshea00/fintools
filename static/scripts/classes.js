@@ -1,6 +1,4 @@
-var fintools = (function() {
-    'use strict';
-
+    
     class StockList extends React.Component {
         constructor(props) {
             super(props);
@@ -9,7 +7,7 @@ var fintools = (function() {
 
         handleClick(event) {
             const ticker = event.target.value;
-            axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/price`)
+            axios.get(`https://cloud.iexapis.com/stable/stock/${ticker}/price?token=${IEXTOKEN}`)
             .then(res => {
                 this.props.addAsset({'ticker': ticker, price: res.data});
             })
@@ -221,7 +219,7 @@ var fintools = (function() {
                 res.data.map(r=>{
                     var ticker = r[0];
                     var companyName = r[1];
-                    axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/chart`)
+                    axios.get(`https://cloud.iexapis.com/stable/stock/${ticker}/chart?token=${IEXTOKEN}`)
                     .then(res=>{
                         var newChart = [{
                             'ticker': ticker,
@@ -338,10 +336,10 @@ var fintools = (function() {
             currAssets.forEach((a)=>{
                 if (utils.isMarketOpen())
                 {
-                    promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/quote`));
+                    promises.push(axios.get(`https://cloud.iexapis.com/stable/stock/${a.ticker}/quote?token=${IEXTOKEN}`));
                 }
                 if (a.chartDate==undefined || !Date.parse(a.chartDate).equals(Date.today())) {
-                    promises.push(axios.get(`https://api.iextrading.com/1.0/stock/${a.ticker}/chart`));
+                    promises.push(axios.get(`https://cloud.iexapis.com/stable/stock/${a.ticker}/chart?token=${IEXTOKEN}`));
                 }
             });
 
@@ -352,14 +350,14 @@ var fintools = (function() {
                         var ticker = "";
                         var assetfor = "";
                         if (respUrl.lastIndexOf("/quote")>0) {
-                            ticker = respUrl.replace("https://api.iextrading.com/1.0/stock/","")
+                            ticker = respUrl.replace("https://cloud.iexapis.com/stable/stock/","")
                             .replace("/quote",'');
                             assetfor = currAssets.filter(a=>a.ticker===ticker);
                             if (assetfor.length>0) {
                                 assetfor[0].lastPrice = r.data.latestPrice;
                             }
                         } else {
-                            ticker = respUrl.replace("https://api.iextrading.com/1.0/stock/","")
+                            ticker = respUrl.replace("https://cloud.iexapis.com/stable/stock/","")
                             .replace("/chart",'');
                             assetfor = currAssets.filter(a=>a.ticker===ticker);
                             if (assetfor.length>0) {
@@ -378,12 +376,12 @@ var fintools = (function() {
                 return;
 
             // lookup info about ticker and add it - this.props.url
-            axios.get(`https://api.iextrading.com/1.0/stock/${event.ticker}/company`)
+            axios.get(`https://cloud.iexapis.com/stable/stock/${event.ticker}/company?token=${IEXTOKEN}`)
                 .then(res => {
                     var asset = res.data;
                     var ticker = event.ticker;
                     var price = event.price;
-                    axios.get(`https://api.iextrading.com/1.0/stock/${ticker}/chart`)
+                    axios.get(`https://cloud.iexapis.com/stable/stock/${ticker}/chart?token=${IEXTOKEN}`)
                     .then(res=>{
                         var newasset = [
                             {
@@ -647,12 +645,12 @@ var fintools = (function() {
             {
                 return (
                     (this.isOn) ?
-                    e('span',{style:{'animation-name':'strobeGreenOff','animation-duration':'2s'}},this.props.value)
+                    <span style={{'animation-name':'strobeGreenOff','animation-duration':'2s'}}>{this.props.value}</span>
                     : 
-                    e('span',{style:{'animation-name':'strobeGreenOn','animation-duration':'2s'}},this.props.value)
+                    <span style={{'animation-name':'strobeGreenOn','animation-duration':'2s'}}>{this.props.value}</span>
                 );
                 } else {
-                    return (e('span',null,this.props.value));
+                    return <span>{this.props.value}</span>;
             }
         } 
     }
@@ -692,27 +690,33 @@ var fintools = (function() {
         handleChange(event) {
             this.setState({value: event.target.value});
         }
+        
+        renderOnEdit = editing => {
+            let notEditing = 
+            <div className='edittext' >
+                <span style={{
+                    display:'inline-block', 
+                    'verticalAlign':'middle',
+                    'textAlign':this.props.align, 
+                    overflow:'hidden', width:this.width}}>
+                    {this.props.value}
+                </span>
+                <span className='oi oi-pencil editpencil' onClick={this.handleClick.bind(this)}></span>
+            </div>;
+            
+            let edit = 
+            <div className='edittext'>
+                <input type='text' style={{width:this.width}} 
+                        value={this.state.value} 
+                        onChange={this.handleChange.bind(this)} 
+                        onFocus={this.handleFocus.bind(this)}
+                        onBlur={this.handleBlur.bind(this)}/>
+                <span className='oi oi-pencil editpencil' onClick={this.handleClick.bind(this)}></span>
+            </div>
+            return (editing) ? edit : notEditing;
+        }
 
-          render() {
-            return (
-                e('div',{className:'edittext'},
-                    (this.state.editing) ? 
-                        e('input',{type:'text', style: {width:this.width}, 
-                            value: this.state.value, 
-                            onChange:this.handleChange.bind(this), 
-                            onFocus:this.handleFocus.bind(this),
-                            onBlur:this.handleBlur.bind(this)}) : 
-                        e('span',{ style: {display:'inline-block', 'verticalAlign':'middle','textAlign':this.props.align, overflow:'hidden', width:this.width}},this.props.value),
-//                        <span className='oi oi-pencil editpencil' onClick={this.handleClick.bind(this)}></span>
-                        e('span',{className:'oi oi-pencil editpencil', onClick:this.handleClick.bind(this)})
-                )
-            );
+        render() {
+            return this.renderOnEdit(this.state.editing);
         }
     }
-
-    return {
-        PortfolioManager: PortfolioManager,
-        EditText: EditText
-    };
-
-}());
