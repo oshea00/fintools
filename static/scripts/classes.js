@@ -73,6 +73,37 @@
         return valStr;
     }
 
+    const CompanyInfoPopup = ({asset}) => {
+        return (
+            <div className='modal fade' key={asset.ticker} id={'companyinfo'+asset.ticker} tabIndex={-1}>
+                <div className='modal-dialog modal-dialog-centered'>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>{asset.companyName}</h5>
+                            <button type='button' className='close' data-dismiss='modal'>{'\u00d7'}</button>
+                        </div>
+                        <div className='modal-body'>
+                            <div className='assetCEO'>{'CEO: '+asset.ceo}</div>
+                            <div>{asset.exchange}</div>
+                            <div>{'Industry: '+asset.industry}</div>
+                            <div>
+                                <span>
+                                   Homepage: <a className='assetUrl' target='_blank' href={asset.website}>{asset.website}</a>
+                                </span>
+                            </div>
+                            <div className='assetDescription'>
+                                {asset.description}
+                            </div>
+                        </div>
+                        <div className='modal-footer'>
+                            <button className='btn btn-secondary' data-dismiss='modal'>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     class PortfolioView extends React.Component {
         constructor(props) {
             super(props);
@@ -146,37 +177,6 @@
             );
         }
 
-        renderTableRowCompanyInfoPopup = asset => {
-            return (
-                <div className='modal fade' key={asset.ticker} id={'companyinfo'+asset.ticker} tabIndex={-1}>
-                    <div className='modal-dialog modal-dialog-centered'>
-                        <div className='modal-content'>
-                            <div className='modal-header'>
-                                <h5 className='modal-title'>{asset.companyName}</h5>
-                                <button type='button' className='close' data-dismiss='modal'>{'\u00d7'}</button>
-                            </div>
-                            <div className='modal-body'>
-                                <div className='assetCEO'>{'CEO: '+asset.ceo}</div>
-                                <div>{asset.exchange}</div>
-                                <div>{'Industry: '+asset.industry}</div>
-                                <div>
-                                    <span>
-                                       Homepage: <a className='assetUrl' target='_blank' href={asset.website}>{asset.website}</a>
-                                    </span>
-                                </div>
-                                <div className='assetDescription'>
-                                    {asset.description}
-                                </div>
-                            </div>
-                            <div className='modal-footer'>
-                                <button className='btn btn-secondary' data-dismiss='modal'>Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
         renderTableFooter = () => {
             return (
                 (this.props.showWeights) ?
@@ -217,7 +217,7 @@
                         {this.renderTableFooter()}
                     </tbody>
                     </table>
-                    {assets.map(asset=>this.renderTableRowCompanyInfoPopup(asset))}
+                    {assets.map(asset=><CompanyInfoPopup asset={asset}/>)}
                 </div> 
                 : null);
         }
